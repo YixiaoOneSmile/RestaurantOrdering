@@ -13,7 +13,7 @@ app.use('/api/menu', require('./routes/menu'));
 app.use('/api/orders', require('./routes/order'));
 
 // 错误处理
-app.use((err, req, res, next) => {
+app.use((err,res) => {
   console.error(err.stack);
   res.status(500).json({ message: '服务器错误' });
 });

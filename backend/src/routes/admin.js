@@ -263,11 +263,4 @@ router.delete('/tables/:id', async (req, res) => {
   }
 });
 
-// 辅助函数
-function getTableStatus(currentOrder) {
-  if (!currentOrder) return 'empty';
-  if (currentOrder.status === 'ordering') return 'dining';
-  return 'dining';
-}
-
 module.exports = router; 

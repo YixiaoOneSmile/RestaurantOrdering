@@ -1,4 +1,4 @@
-const { sequelize, MenuItem, Table, Order } = require('../src/models');
+const { sequelize, MenuItem, Table} = require('../src/models');
 const path = require('path');
 const fs = require('fs');
 

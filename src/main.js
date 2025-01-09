@@ -30,7 +30,7 @@ const routes = [
       { path: ':tableId', component: () => import('./pages/OrderMenu.vue'), props: true }
     ]
   },
-  { path: '/', redirect: '/admin/tables' }
+  { path: '/', redirect: '/table/1' }
 ]
 
 const router = new VueRouter({
