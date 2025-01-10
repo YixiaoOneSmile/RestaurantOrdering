@@ -385,7 +385,7 @@ export default {
     async handleCheckout() {
       if (!this.currentOrder || this.checkoutLoading) return
       this.checkoutLoading = true
-
+      
       try {
         await request.post(`/api/orders/${this.currentOrder.id}/checkout`, {
           paymentMethod: this.paymentMethod,
@@ -395,8 +395,6 @@ export default {
         this.$message.success('结账成功')
         this.checkoutVisible = false
         await this.loadCurrentOrder()
-        
-        // 结账成功后延迟跳转，让用户看到成功提示
         setTimeout(() => {
           this.$router.push('/')
         }, 1500)

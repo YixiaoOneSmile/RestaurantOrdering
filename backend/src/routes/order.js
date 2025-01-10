@@ -132,4 +132,45 @@ router.post('/orders/:orderId/append', async (req, res) => {
   }
 });
 
+// 结账路由
+router.post('/orders/:orderId/checkout', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { paymentMethod, tableId } = req.body;
+    
+    // 查找订单
+    const order = await Order.findByPk(orderId);
+    if (!order) {
+      return res.status(404).json({ 
+        code: 1, 
+        message: '订单不存在' 
+      });
+    }
+
+    // 更新订单状态为已完成
+    await order.update({
+      status: 'completed',
+      paymentMethod,
+      paidAt: new Date()
+    });
+
+    // 更新餐桌状态为空闲
+    await Table.update(
+      { status: 'empty' },
+      { where: { id: tableId } }
+    );
+
+    res.json({ 
+      code: 0, 
+      message: '结账成功' 
+    });
+  } catch (error) {
+    console.error('Checkout error:', error);
+    res.status(500).json({ 
+      code: 1, 
+      message: '结账失败' 
+    });
+  }
+});
+
 module.exports = router; 
