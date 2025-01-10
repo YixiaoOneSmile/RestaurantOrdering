@@ -25,7 +25,7 @@
             <div class="table-number">{{ $t('table.numberFormat', { number: table.number }) }}</div>
             <div class="table-status">
               <el-tag :type="getTableStatusType(table.status)">
-                {{ $t(`table.${table.status}`) }}
+                {{ getTableStatusText(table.status) }}
               </el-tag>
             </div>
             <div class="table-info" v-if="table.currentOrder">
@@ -198,6 +198,7 @@ export default {
   },
   methods: {
     formatTime,
+    // 加载桌台数据
     async loadTables() {
       this.loading = true
       try {
@@ -209,26 +210,42 @@ export default {
         this.loading = false
       }
     },
+    // 获取桌台状态样式
     getTableStatusType(status) {
       const typeMap = {
-        'empty': 'success',
-        'ordering': 'info',
-        'dining': 'danger',
-        'paid': 'info'
+        'empty': 'success',    // 空闲
+        'ordering': 'warning', // 点餐中
+        'dining': 'danger',    // 就餐中
       }
       return typeMap[status] || 'info'
     },
+    // 获取订单状态文本
     getTableStatusText(status) {
-      return this.$t(`table.${status}`) || this.$t('table.unknownStatus')
+      const textMap = {
+        'empty': '空闲',
+        'ordering': '点餐中',
+        'dining': '就餐中'
+      }
+      return textMap[status] || '未知状态'
     },
+    // 显示桌台详情
     async showTableDetail(table) {
       this.selectedTable = table;
       try {
         const res = await request.get(`/api/admin/tables/${table.id}/current-order`);
         this.currentOrder = res.data;
+        
         if (this.currentOrder) {
           this.currentOrder.items = Array.isArray(this.currentOrder.items) ? this.currentOrder.items : [];
-          this.orderDetailVisible = true;
+          
+          // 根据不同状态显示不同操作
+          if (table.status === 'ordering') {
+            // 点餐中状态 - 显示订单详情,可以点击完成订单
+            this.orderDetailVisible = true;
+          } else if (table.status === 'dining') {
+            // 就餐中状态 - 直接显示结账弹窗
+            this.showCheckout();
+          }
         } else {
           this.$message.info('该桌台暂无订单');
         }
@@ -239,10 +256,12 @@ export default {
     async completeOrder() {
       try {
         await request.put(`/api/admin/orders/${this.currentOrder.id}/complete`, {
-          tableId: this.selectedTable.id
+          tableId: this.selectedTable.id,
+          status: 'dining'  // 完成订单后状态改为就餐中
         })
-        this.$message.success('订单已完成')
-        this.loadTables()
+        this.$message.success('订单已完成,状态更新为就餐中')
+        this.orderDetailVisible = false  // 关闭订单详情弹窗
+        this.loadTables()  // 刷新桌台状态
       } catch (error) {
         this.$message.error('操作失败')
       }
@@ -251,6 +270,7 @@ export default {
       this.checkoutVisible = true
       this.paymentMethod = 'cash'
     },
+    // 处理结账
     async handleCheckoutWithDialog() {
       if (this.checkoutLoading) return
       this.checkoutLoading = true
@@ -268,6 +288,7 @@ export default {
         this.checkoutLoading = false
       }
     },
+    // 生成点餐二维码URL
     showQRCode() {
       if (!this.selectedTable) {
         this.$message.warning('请先选择桌台')
@@ -298,15 +319,19 @@ export default {
     },
     getOrderStatusType(status) {
       const typeMap = {
-        'empty': 'success',
-        'ordering': 'info',
-        'dining': 'danger',
-        'paid': 'info'
+        'empty': 'success',    // 空闲
+        'ordering': 'warning', // 点餐中
+        'dining': 'danger',    // 就餐中
       }
       return typeMap[status] || 'info'
     },
     getOrderStatusText(status) {
-      return this.$t(`order.${status}`) || this.$t('order.unknownStatus')
+      const textMap = {
+        'empty': '空闲',
+        'ordering': '点餐中',
+        'dining': '就餐中'
+      }
+      return textMap[status] || '未知状态'
     },
   },
 }

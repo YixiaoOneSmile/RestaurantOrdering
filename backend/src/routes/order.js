@@ -32,15 +32,15 @@ router.post('/orders', async (req, res) => {
     const order = await Order.create({
       tableId,
       items,
-      status: 'ordering',  // 使用正确的初始状态
+      status: 'ordering',  // 初始状态为"点餐中"
       totalAmount,
       peopleCount,
       createdAt: new Date()
     });
 
-    // 更新桌台状态
+    // 更新桌台状态为"点餐中"
     await Table.update(
-      { status: 'dining' },
+      { status: 'ordering' },  // 改为"点餐中"状态
       { where: { id: tableId } }
     );
 

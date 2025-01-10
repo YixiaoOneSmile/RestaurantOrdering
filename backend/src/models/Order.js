@@ -32,7 +32,7 @@ module.exports = (sequelize) => {
       allowNull: false,
       defaultValue: 'ordering',
       validate: {
-        isIn: [['ordering', 'processing', 'dining', 'completed']]
+        isIn: [['ordering', 'dining', 'completed']]
       }
     },
     totalAmount: {

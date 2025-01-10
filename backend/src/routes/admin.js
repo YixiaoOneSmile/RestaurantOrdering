@@ -58,12 +58,21 @@ router.get('/tables/:tableId/current-order', async (req, res) => {
 router.put('/orders/:orderId/complete', async (req, res) => {
   try {
     const { orderId } = req.params;
+    const { tableId } = req.body;
+    
+    // 更新订单状态
     const order = await Order.findByPk(orderId);
     if (order) {
-      order.status = 'completed';
-      order.servedAt = new Date();
+      order.status = 'dining';  // 改为就餐中状态
       await order.save();
+      
+      // 同时更新桌台状态
+      await Table.update(
+        { status: 'dining' },
+        { where: { id: tableId } }
+      );
     }
+    
     res.json({ code: 0, message: '操作成功' });
   } catch (error) {
     res.status(500).json({ code: 1, message: '操作失败' });
