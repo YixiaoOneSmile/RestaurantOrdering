@@ -196,18 +196,35 @@ router.get('/orders', async (req, res) => {
 router.post('/tables', async (req, res) => {
   try {
     const { number, capacity } = req.body;
+    
     // 检查桌号是否已存在
     const existingTable = await Table.findOne({ where: { number } });
     if (existingTable) {
-      return res.status(400).json({ code: 1, message: '该桌号已存在' });
+      return res.status(400).json({ 
+        code: 1, 
+        message: '该桌号已存在' 
+      });
     }
     
+    // 验证容纳人数
+    if (capacity < 1 || capacity > 20) {
+      return res.status(400).json({
+        code: 1,
+        message: '容纳人数必须在1-20人之间'
+      });
+    }
+
     const table = await Table.create({
       number,
       capacity,
       status: 'empty'
     });
-    res.json({ code: 0, data: table });
+
+    res.json({ 
+      code: 0, 
+      data: table,
+      message: '添加成功'
+    });
   } catch (error) {
     console.error('Create table error:', error);
     res.status(500).json({ code: 1, message: '添加失败' });

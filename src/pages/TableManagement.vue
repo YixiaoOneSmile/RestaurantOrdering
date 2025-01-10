@@ -4,6 +4,9 @@
       <div class="tables-header">
         <h2>{{ $t('table.status') }}</h2>
         <div>
+          <el-button type="primary" size="small" @click="showAddTableDialog">
+            {{ $t('table.addTable') }}
+          </el-button>
           <el-button type="primary" size="small" @click="refreshTables" :loading="loading">
             {{ $t('common.refresh') }}
           </el-button>
@@ -164,6 +167,27 @@
         {{ $t('order.noOrderInfo') }}
       </div>
     </el-dialog>
+
+    <el-dialog
+      :title="$t('table.addTable')"
+      :visible.sync="addTableVisible"
+      width="400px"
+    >
+      <el-form :model="newTable" ref="tableForm" :rules="tableRules" label-width="100px">
+        <el-form-item :label="$t('table.number')" prop="number">
+          <el-input-number v-model="newTable.number" :min="1" controls-position="right"></el-input-number>
+        </el-form-item>
+        <el-form-item :label="$t('table.capacity')" prop="capacity">
+          <el-input-number v-model="newTable.capacity" :min="1" :max="20" controls-position="right"></el-input-number>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="addTableVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="addTable" :loading="addingTable">
+          {{ $t('common.confirm') }}
+        </el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -185,6 +209,22 @@ export default {
       paymentMethod: 'cash',
       refreshTimer: null,
       orderDetailVisible: false,
+      addTableVisible: false,
+      addingTable: false,
+      newTable: {
+        number: 1,
+        capacity: 4
+      },
+      tableRules: {
+        number: [
+          { required: true, message: '请输入桌号', trigger: 'blur' },
+          { type: 'number', min: 1, message: '桌号必须大于0', trigger: 'blur' }
+        ],
+        capacity: [
+          { required: true, message: '请输入容纳人数', trigger: 'blur' },
+          { type: 'number', min: 1, message: '容纳人数必须大于0', trigger: 'blur' }
+        ]
+      }
     }
   },
   created() {
@@ -333,6 +373,32 @@ export default {
       }
       return textMap[status] || '未知状态'
     },
+    // 显示添加桌台对话框
+    showAddTableDialog() {
+      this.addTableVisible = true
+      this.newTable = {
+        number: Math.max(...this.tables.map(t => t.number), 0) + 1,
+        capacity: 4
+      }
+    },
+    // 添加桌台
+    async addTable() {
+      try {
+        await this.$refs.tableForm.validate()
+        this.addingTable = true
+        
+        await request.post('/api/admin/tables', this.newTable)
+        
+        this.$message.success('添加桌台成功')
+        this.addTableVisible = false
+        this.loadTables()
+      } catch (error) {
+        if (error === false) return // 表单验证失败
+        this.$message.error(error.response?.data?.message || '添加桌台失败')
+      } finally {
+        this.addingTable = false
+      }
+    }
   },
 }
 </script>

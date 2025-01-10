@@ -40,7 +40,9 @@ export default {
     viewQRCode: '查看点餐码',
     unknownStatus: '未知状态',
     selectTableFirst: '请先选择桌台',
-    people: '人'
+    people: '人',
+    addSuccess: '添加桌台成功',
+    numberExists: '该桌号已存在'
   },
   order: {
     orderNo: '订单号',
