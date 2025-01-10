@@ -47,7 +47,7 @@
         </div>
       </div>
     </div>
-
+    <!-- 结账弹窗 -->
     <el-dialog
       :title="$t('order.checkoutTitle')"
       :visible.sync="checkoutVisible"
@@ -78,7 +78,7 @@
         </el-button>
       </span>
     </el-dialog>
-
+    <!-- 点餐二维码弹窗 -->
     <el-dialog
       :title="$t('table.qrCode')"
       :visible.sync="qrCodeVisible"
@@ -99,13 +99,15 @@
         </div>
       </div>
     </el-dialog>
-
+    <!-- 订单详情弹窗 -->
     <el-dialog
       :title="$t('order.details')"
       :visible.sync="orderDetailVisible"
       width="600px"
     >
+      <!-- 订单详情内容 -->
       <div v-if="currentOrder" class="order-detail">
+        <!-- 订单头部 -->
         <div class="order-header">
           <div class="table-info">
             <span class="label">{{ $t('table.number') }}:</span>
@@ -117,7 +119,7 @@
             </el-tag>
           </div>
         </div>
-        
+        <!-- 订单详情表格 -->
         <el-table :data="currentOrder.items" style="width: 100%; margin-top: 20px;">
           <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
           <el-table-column prop="quantity" :label="$t('order.quantity')" width="100">
@@ -131,7 +133,7 @@
             </template>
           </el-table-column>
         </el-table>
-        
+        <!-- 订单详情底部 -->
         <div class="order-footer">
           <div class="order-time">
             <div>{{ $t('order.orderTime') }}: {{ formatTime(currentOrder.createdAt) }}</div>
@@ -144,7 +146,7 @@
             <span class="total-amount">¥{{ currentOrder.totalAmount }}</span>
           </div>
         </div>
-        
+        <!-- 订单详情底部 -->
         <div class="order-actions">
           <el-button-group>
             <el-button 
@@ -163,11 +165,12 @@
           </el-button-group>
         </div>
       </div>
+      <!-- 订单详情空状态 -->
       <div v-else class="empty-order">
         {{ $t('order.noOrderInfo') }}
       </div>
     </el-dialog>
-
+    <!-- 添加桌台弹窗 -->
     <el-dialog
       :title="$t('table.addTable')"
       :visible.sync="addTableVisible"

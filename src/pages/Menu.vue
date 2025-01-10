@@ -1,17 +1,14 @@
 <template>
   <div class="menu-container">
     <h1 class="page-title">餐厅菜单 - 桌号 {{ tableId }}</h1>
-    
     <!-- 错误提示 -->
     <div v-if="error" class="error-message">
       {{ error }}
     </div>
-
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-spinner">
       加载中...
     </div>
-
     <!-- 重新设计的分类导航 -->
     <nav v-if="!loading" class="category-nav">
       <div class="category-scroll">
@@ -26,7 +23,7 @@
         </button>
       </div>
     </nav>
-
+    <!-- 菜单项 -->
     <div class="menu-items">
       <div 
         v-for="item in filteredMenuItems" 
@@ -46,11 +43,12 @@
           </button>
         </div>
       </div>
-    </div>
-
+    </div>  
+    <!-- 订单汇总 -->
     <div class="order-summary">
       <div class="order-content">
         <h2>当前订单</h2>
+        <!-- 订单项 -->
         <div class="order-items">
           <div v-for="(item, index) in currentOrder.items" :key="index" class="order-item">
             <span class="item-name">{{ item.menuItem.name }}</span>
@@ -65,6 +63,7 @@
             </button>
           </div>
         </div>
+        <!-- 订单总计 -->
         <div class="order-total">
           <h3>总计: <span>￥{{ currentOrder.totalAmount }}</span></h3>
           <button 
