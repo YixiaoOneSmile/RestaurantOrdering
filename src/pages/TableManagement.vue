@@ -558,6 +558,11 @@ export default {
         const response = await request.get(`/api/admin/tables/${this.selectedTable.id}/current-order`);
         this.currentOrder = response.data;  // 更新当前订单数据
 
+        // 如果订单为空，则关闭订单详情弹窗
+        if (!this.currentOrder) {
+          this.orderDetailVisible = false;
+        }
+
         // 刷新桌台列表
         await this.loadTables();
         

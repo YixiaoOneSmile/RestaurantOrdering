@@ -369,6 +369,11 @@ router.delete('/orders/:orderId/delete-item', async (req, res) => {
       totalAmount: newTotalAmount
     });
 
+    if(items.length === 0){
+      await order.destroy();
+      await Table.update({ status: 'empty' }, { where: { id: order.tableId } });
+    }
+
     res.json({ code: 0, message: '删除成功' });
   } catch (error) {
     console.error('Delete order item error:', error);
