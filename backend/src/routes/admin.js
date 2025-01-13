@@ -60,21 +60,37 @@ router.put('/orders/:orderId/complete', async (req, res) => {
     const { orderId } = req.params;
     const { tableId } = req.body;
     
-    // 更新订单状态
+    // 获取订单
     const order = await Order.findByPk(orderId);
-    if (order) {
-      order.status = 'dining';  // 改为就餐中状态
-      await order.save();
-      
-      // 同时更新桌台状态
-      await Table.update(
-        { status: 'dining' },
-        { where: { id: tableId } }
-      );
+    if (!order) {
+      return res.status(404).json({ code: 1, message: '订单不存在' });
     }
+
+    // 获取所有菜品
+    const allItems = order.items;
+    
+    // 合并原始菜品和追加菜品
+    const mergedItems = allItems.map(item => ({
+      ...item,
+      isAppended: false,  // 移除追加标记
+      appendedAt: null    // 移除追加时间
+    }));
+
+    // 更新订单状态和菜品
+    await order.update({
+      status: 'dining',    // 改为就餐中状态
+      items: mergedItems,  // 更新合并后的菜品
+    });
+    
+    // 更新桌台状态
+    await Table.update(
+      { status: 'dining' },
+      { where: { id: tableId } }
+    );
     
     res.json({ code: 0, message: '操作成功' });
   } catch (error) {
+    console.error('Complete order error:', error);
     res.status(500).json({ code: 1, message: '操作失败' });
   }
 });

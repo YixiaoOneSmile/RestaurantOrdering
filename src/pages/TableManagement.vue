@@ -1,21 +1,26 @@
 <template>
   <div class="table-management">
+    <!-- admin页面头部 -->
     <div class="tables-container">
+      <!-- 桌台列表头部 -->
       <div class="tables-header">
         <h2>{{ $t('table.status') }}</h2>
         <div>
+          <!-- 添加桌台 -->
           <el-button type="primary" size="small" @click="showAddTableDialog">
             {{ $t('table.addTable') }}
           </el-button>
+          <!-- 刷新桌台 -->
           <el-button type="primary" size="small" @click="refreshTables" :loading="loading">
             {{ $t('common.refresh') }}
           </el-button>
+          <!-- 查看点餐码 -->
           <el-button type="success" size="small" @click="showQRCode">
             {{ $t('table.viewQRCode') }}
           </el-button>
         </div>
       </div>
-      
+      <!-- 桌台列表 -->
       <div class="tables-grid">
         <div 
           v-for="table in tables" 
@@ -25,15 +30,21 @@
           @click="showTableDetail(table)"
         >
           <div class="table-content">
+            <!-- 桌号 -->
             <div class="table-number">{{ $t('table.numberFormat', { number: table.number }) }}</div>
+            <!-- 状态 -->
             <div class="table-status">
               <el-tag :type="getTableStatusType(table.status)">
                 {{ getTableStatusText(table.status) }}
               </el-tag>
             </div>
+            <!-- 订单信息 -->
             <div class="table-info" v-if="table.currentOrder">
+              <!-- 开始时间 -->
               <div>{{ $t('order.startTime') }}: {{ formatTime(table.currentOrder.createdAt) }}</div>
+              <!-- 总金额 -->
               <div>{{ $t('order.amount') }}: ¥{{ table.currentOrder.totalAmount }}</div>
+              <!-- 结账按钮 -->
               <el-button 
                 type="danger" 
                 size="small" 
@@ -53,11 +64,9 @@
       :visible.sync="checkoutVisible"
       width="400px"
     >
+      <!-- 结账内容 -->
       <div class="checkout-content">
-        <div class="checkout-item">
-          <span>{{ $t('order.consumptionAmount') }}:</span>
-          <span class="amount">¥{{ currentOrder?.totalAmount || 0 }}</span>
-        </div>
+        <!-- 支付方式 -->
         <div class="checkout-item">
           <span>{{ $t('order.paymentMethod') }}:</span>
           <el-radio-group v-model="paymentMethod">
@@ -67,8 +76,56 @@
           </el-radio-group>
         </div>
       </div>
+      <!-- 订单详情内容 -->
+      <div v-if="currentOrder" class="order-detail">
+        <!-- 订单头部 -->
+        <div class="order-header">
+          <div class="table-info">
+            <span class="label">{{ $t('table.number') }}:</span>
+            <span class="value">{{ $t('table.numberFormat', { number: selectedTable?.number }) }}</span>
+          </div>
+          <div class="order-status">
+            <el-tag :type="getOrderStatusType(currentOrder.status)">
+              {{ getOrderStatusText(currentOrder.status) }}
+            </el-tag>
+          </div>
+        </div>
+        <!-- 订单详情表格 -->
+        <el-table :data="currentOrder.items" style="width: 100%; margin-top: 20px;">
+          <!-- 菜品名称 -->
+          <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
+          <!-- 数量 -->
+          <el-table-column prop="quantity" :label="$t('order.quantity')" width="100">
+            <template #default="{ row }">
+              <span class="quantity">x{{ row.quantity }}</span>
+            </template>
+          </el-table-column>
+          <!-- 金额 -->
+          <el-table-column :label="$t('order.amount')" width="120">
+            <template #default="{ row }">
+              <span class="amount">¥{{ row.price * row.quantity }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 订单详情底部 -->
+        <div class="order-footer">
+          <div class="order-time">
+            <div>{{ $t('order.orderTime') }}: {{ formatTime(currentOrder.createdAt) }}</div>
+            <div v-if="currentOrder.completedAt">
+              {{ $t('order.completedTime') }}: {{ formatTime(currentOrder.completedAt) }}
+            </div>
+          </div>
+          <div class="order-total">
+            <span class="label">{{ $t('order.total') }}:</span>
+            <span class="total-amount">¥{{ currentOrder.totalAmount }}</span>
+          </div>
+        </div>
+      </div>
+      <!-- 结账底部 -->
       <span slot="footer" class="dialog-footer">
+        <!-- 取消 -->
         <el-button @click="checkoutVisible = false">{{ $t('common.cancel') }}</el-button>
+        <!-- 确认结账 -->
         <el-button 
           type="primary" 
           @click="handleCheckoutWithDialog"
@@ -105,7 +162,6 @@
       :visible.sync="orderDetailVisible"
       width="600px"
     >
-      <!-- 订单详情内容 -->
       <div v-if="currentOrder" class="order-detail">
         <!-- 订单头部 -->
         <div class="order-header">
@@ -119,20 +175,43 @@
             </el-tag>
           </div>
         </div>
-        <!-- 订单详情表格 -->
-        <el-table :data="currentOrder.items" style="width: 100%; margin-top: 20px;">
-          <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
-          <el-table-column prop="quantity" :label="$t('order.quantity')" width="100">
-            <template #default="{ row }">
-              <span class="quantity">x{{ row.quantity }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column :label="$t('order.amount')" width="120">
-            <template #default="{ row }">
-              <span class="amount">¥{{ row.price * row.quantity }}</span>
-            </template>
-          </el-table-column>
-        </el-table>
+
+        <!-- 原始订单菜品 -->
+        <div class="order-section">
+          <h3 class="section-title">{{ $t('order.originalItems') }}</h3>
+          <el-table :data="originalItems" style="width: 100%">
+            <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
+            <el-table-column prop="quantity" :label="$t('order.quantity')" width="100">
+              <template #default="{ row }">
+                <span class="quantity">x{{ row.quantity }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('order.amount')" width="120">
+              <template #default="{ row }">
+                <span class="amount">¥{{ row.price * row.quantity }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+
+        <!-- 追加的菜品 -->
+        <div v-if="appendedItems.length" class="order-section appended-section">
+          <h3 class="section-title">{{ $t('order.appendedItems') }}</h3>
+          <el-table :data="appendedItems" style="width: 100%">
+            <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
+            <el-table-column prop="quantity" :label="$t('order.quantity')" width="100">
+              <template #default="{ row }">
+                <span class="quantity">x{{ row.quantity }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('order.amount')" width="120">
+              <template #default="{ row }">
+                <span class="amount">¥{{ row.price * row.quantity }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+
         <!-- 订单详情底部 -->
         <div class="order-footer">
           <div class="order-time">
@@ -146,7 +225,8 @@
             <span class="total-amount">¥{{ currentOrder.totalAmount }}</span>
           </div>
         </div>
-        <!-- 订单详情底部 -->
+
+        <!-- 操作按钮 -->
         <div class="order-actions">
           <el-button-group>
             <el-button 
@@ -403,6 +483,18 @@ export default {
       }
     }
   },
+  computed: {
+    // 原始菜品
+    originalItems() {
+      if (!this.currentOrder?.items) return [];
+      return this.currentOrder.items.filter(item => !item.isAppended);
+    },
+    // 追加的菜品
+    appendedItems() {
+      if (!this.currentOrder?.items) return [];
+      return this.currentOrder.items.filter(item => item.isAppended);
+    }
+  }
 }
 </script>
 
@@ -597,5 +689,21 @@ export default {
 }
 .table-item.dining {
   background-color: #fef0f0;
+}
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 15px 0;
+  padding-left: 10px;
+  border-left: 3px solid #409EFF;
+}
+.appended-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed #eee;
+}
+.order-section {
+  margin-bottom: 20px;
 }
 </style> 

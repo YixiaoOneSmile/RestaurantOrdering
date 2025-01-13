@@ -1,5 +1,6 @@
 <template>
   <div class="table-settings">
+    <!-- 页面头部 -->
     <div class="page-header">
       <h2>{{ $t('menu.tableSettings') }}</h2>
       <el-button type="primary" @click="showAddDialog">
@@ -7,17 +8,21 @@
       </el-button>
     </div>
 
+    <!-- 桌台列表 -->
     <el-table :data="tables" v-loading="loading">
+      <!-- 桌号 -->
       <el-table-column prop="number" :label="$t('table.number')" width="120">
         <template #default="{ row }">
           {{ $t('table.numberFormat', { number: row.number }) }}
         </template>
       </el-table-column>
+      <!-- 容纳人数 -->
       <el-table-column prop="capacity" :label="$t('table.capacity')" width="120">
         <template #default="{ row }">
           {{ row.capacity || 4 }}{{ $t('table.people') }}
         </template>
       </el-table-column>
+      <!-- 状态 -->
       <el-table-column prop="status" :label="$t('table.status')" width="120">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status)">
@@ -25,19 +30,23 @@
           </el-tag>
         </template>
       </el-table-column>
+      <!-- 操作 -->
       <el-table-column :label="$t('table.operations')" width="200">
         <template #default="{ row }">
+          <!-- 编辑 -->
           <el-button 
             type="text" 
             @click="editTable(row)"
             :disabled="row.status !== 'empty'"
           >{{ $t('common.edit') }}</el-button>
+          <!-- 删除 -->
           <el-button 
             type="text" 
             class="danger" 
             @click="deleteTable(row)"
             :disabled="row.status !== 'empty'"
           >{{ $t('common.delete') }}</el-button>
+          <!-- 查看点餐码 -->
           <el-button 
             type="text"
             @click="showQRCode(row)"

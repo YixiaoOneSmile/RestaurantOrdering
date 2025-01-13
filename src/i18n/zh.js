@@ -74,7 +74,9 @@ export default {
     },
     selectedItems: '已选{count}件',
     viewOrdered: '查看已点',
-    submit: '提交订单'
+    submit: '提交订单',
+    originalItems: '原始菜品',
+    appendedItems: '追加菜品'
   },
   dishes: {
     add: '添加菜品',

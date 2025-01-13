@@ -80,11 +80,10 @@ router.post('/orders/:orderId/append', async (req, res) => {
     const { orderId } = req.params;
     const { items } = req.body;
 
-    // 查找原订单
     const order = await Order.findOne({
       where: {
         id: orderId,
-        status: ['ordering', 'processing', 'dining']  // 只允许这些状态的订单追加
+        status: ['ordering', 'processing', 'dining']
       }
     });
 
@@ -92,34 +91,31 @@ router.post('/orders/:orderId/append', async (req, res) => {
       return res.status(404).json({ code: 1, message: '订单不存在或不能追加' });
     }
 
-    // 获取原有菜品并合并新菜品
+    // 获取原有菜品
     const currentItems = order.items;
+    
+    // 标记新菜品
     const newItems = items.map(item => ({
-      dishId: item.dishId,
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity
+      ...item,
+      isAppended: true,  // 标记为追加的菜品
+      appendedAt: new Date()
     }));
 
-    // 合并相同菜品的数量
-    const mergedItems = [...currentItems];
-    newItems.forEach(newItem => {
-      const existingItem = mergedItems.find(item => item.dishId === newItem.dishId);
-      if (existingItem) {
-        existingItem.quantity += newItem.quantity;
-      } else {
-        mergedItems.push(newItem);
-      }
-    });
-
-    // 计算新的总金额
-    const totalAmount = mergedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    // 更新订单
-    await order.update({
-      items: mergedItems,
-      totalAmount
-    });
+    // 更新订单和桌台状态
+    await Promise.all([
+      // 更新订单
+      order.update({
+        items: [...currentItems, ...newItems],
+        status: 'ordering',  // 状态改为点餐中
+        totalAmount: currentItems.reduce((sum, item) => sum + item.price * item.quantity, 0) +
+                    newItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      }),
+      // 更新桌台状态
+      Table.update(
+        { status: 'ordering' },  // 改为点餐中
+        { where: { id: order.tableId } }
+      )
+    ]);
 
     res.json({ 
       code: 0, 
