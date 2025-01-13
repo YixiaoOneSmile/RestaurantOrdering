@@ -193,15 +193,24 @@
         <div class="order-section">
           <h3 class="section-title">{{ $t('order.originalItems') }}</h3>
           <el-table :data="originalItems" style="width: 100%">
+            <!-- 菜品名称 -->
             <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
+            <!-- 数量 -->
             <el-table-column prop="quantity" :label="$t('order.quantity')" width="100">
               <template #default="{ row }">
                 <span class="quantity">x{{ row.quantity }}</span>
               </template>
             </el-table-column>
+            <!-- 金额 -->
             <el-table-column :label="$t('order.amount')" width="120">
               <template #default="{ row }">
                 <span class="amount">¥{{ row.price * row.quantity }}</span>
+              </template>
+            </el-table-column>
+            <!-- 操作 -->
+            <el-table-column :label="$t('common.action')" width="80" align="center">
+              <template #default="{ row }">
+                <el-button type="danger" size="small" @click="removeItem(row)">{{ $t('common.remove') }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -210,13 +219,19 @@
         <!-- 追加的菜品 -->
         <div v-if="appendedItems.length" class="order-section appended-section">
           <h3 class="section-title">{{ $t('order.appendedItems') }}</h3>
-          <el-table :data="appendedItems" style="width: 100%">
+          <el-table 
+            :data="appendedItems" 
+            style="width: 100%"
+          >
+            <!-- 菜品名称 -->
             <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
+            <!-- 数量 -->
             <el-table-column prop="quantity" :label="$t('order.quantity')" width="100">
               <template #default="{ row }">
                 <span class="quantity">x{{ row.quantity }}</span>
               </template>
             </el-table-column>
+            <!-- 金额 -->
             <el-table-column :label="$t('order.amount')" width="120">
               <template #default="{ row }">
                 <span class="amount">¥{{ row.price * row.quantity }}</span>
@@ -242,6 +257,7 @@
         <!-- 操作按钮 -->
         <div class="order-actions">
           <el-button-group>
+            <!-- 完成订单 -->
             <el-button 
               type="success" 
               :disabled="currentOrder.status === 'completed'"
@@ -249,6 +265,7 @@
             >
               {{ $t('order.complete') }}
             </el-button>
+            <!-- 结账 -->
             <el-button 
               type="danger"
               @click="showCheckout"
@@ -389,6 +406,7 @@ export default {
         this.$message.error('加载订单失败');
       }
     },
+    // 完成订单
     async completeOrder() {
       try {
         await request.put(`/api/admin/orders/${this.currentOrder.id}/complete`, {
@@ -494,18 +512,56 @@ export default {
       } finally {
         this.addingTable = false
       }
+    },
+    // 删除菜单单项
+    async removeItem(item) {
+      try {
+        await this.$confirm(this.$t('order.deleteConfirm'), this.$t('common.tip'), {
+          confirmButtonText: this.$t('common.confirm'),
+          cancelButtonText: this.$t('common.cancel'),
+          type: 'warning'
+        });
+
+        await request.delete(`/api/admin/orders/${this.currentOrder.id}/delete-item`, {
+          data: {
+            itemIndex: item.index  // 传递菜品在数组中的索引
+          }
+        });
+
+        // 刷新订单详情
+        const response = await request.get(`/api/admin/tables/${this.selectedTable.id}/current-order`);
+        this.currentOrder = response.data;  // 更新当前订单数据
+
+        // 刷新桌台列表
+        await this.loadTables();
+        
+        this.$message.success(this.$t('order.deleteSuccess'));
+      } catch (error) {
+        if (error !== 'cancel') {
+          console.error('Delete item error:', error);
+          this.$message.error(this.$t('order.deleteFailed'));
+        }
+      }
     }
   },
   computed: {
     // 原始菜品
     originalItems() {
       if (!this.currentOrder?.items) return [];
-      return this.currentOrder.items.filter(item => !item.isAppended);
+      return this.currentOrder.items
+        .filter(item => !item.isAppended)
+        .map((item, index) => ({...item, index}));
     },
+    
     // 追加的菜品
     appendedItems() {
       if (!this.currentOrder?.items) return [];
-      return this.currentOrder.items.filter(item => item.isAppended);
+      return this.currentOrder.items
+        .filter(item => item.isAppended)
+        .map((item, index) => ({
+          ...item, 
+          index: index + this.originalItems.length
+        }));
     }
   }
 }

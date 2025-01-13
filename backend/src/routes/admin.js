@@ -305,4 +305,45 @@ router.delete('/tables/:id', async (req, res) => {
   }
 });
 
+// 删除菜单单项
+router.delete('/orders/:orderId/delete-item', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { itemIndex } = req.body;
+    
+    const order = await Order.findByPk(orderId);
+    if (!order) {
+      return res.status(404).json({ code: 1, message: '订单不存在' });
+    }
+
+    // 获取当前订单的所有菜品
+    const items = order.items;
+    
+    // 确保索引有效
+    if (itemIndex < 0 || itemIndex >= items.length) {
+      return res.status(400).json({ code: 1, message: '无效的菜品索引' });
+    }
+
+    // 删除指定索引的菜品
+    items.splice(itemIndex, 1);
+
+    // 重新计算总金额
+    const newTotalAmount = items.reduce(
+      (sum, item) => sum + (item.price * item.quantity), 
+      0
+    );
+
+    // 更新订单
+    await order.update({
+      items: items,
+      totalAmount: newTotalAmount
+    });
+
+    res.json({ code: 0, message: '删除成功' });
+  } catch (error) {
+    console.error('Delete order item error:', error);
+    res.status(500).json({ code: 1, message: '删除失败' });
+  }
+});
+
 module.exports = router; 

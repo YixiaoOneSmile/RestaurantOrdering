@@ -14,7 +14,10 @@ export default {
     to: '至',
     startDate: '开始日期',
     endDate: '结束日期',
-    currency: '¥{amount}'
+    currency: '¥{amount}',
+    tip: '提示',
+    remove: '删除',
+    action: '操作'
   },
   menu: {
     title: '餐厅管理系统',
@@ -76,7 +79,11 @@ export default {
     viewOrdered: '查看已点',
     submit: '提交订单',
     originalItems: '原始菜品',
-    appendedItems: '追加菜品'
+    appendedItems: '追加菜品',
+    deleteItem: '删除菜品',
+    deleteConfirm: '确认删除该菜品?',
+    deleteSuccess: '删除成功',
+    deleteFailed: '删除失败'
   },
   dishes: {
     add: '添加菜品',
