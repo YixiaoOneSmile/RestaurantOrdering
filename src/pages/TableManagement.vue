@@ -257,6 +257,12 @@
         <!-- 操作按钮 -->
         <div class="order-actions">
           <el-button-group>
+            <!-- 删除菜品 -->
+            <el-button 
+              @click="removeOrder()"
+            >
+              {{ $t('common.remove') }}
+            </el-button>
             <!-- 完成订单 -->
             <el-button 
               type="success" 
@@ -418,6 +424,26 @@ export default {
         this.loadTables()  // 刷新桌台状态
       } catch (error) {
         this.$message.error('操作失败')
+      }
+    },
+    // 删除订单
+    async removeOrder() {
+      try {
+        await this.$confirm(this.$t('order.deleteConfirm'), this.$t('common.tip'), {
+          confirmButtonText: this.$t('common.confirm'),
+          cancelButtonText: this.$t('common.cancel'),
+          type: 'warning'
+        });
+
+        await request.delete(`/api/admin/orders/${this.currentOrder.id}/remove`);
+        this.$message.success(this.$t('order.deleteSuccess'));
+        this.orderDetailVisible = false;
+        await this.loadTables();
+      } catch (error) {
+        if (error !== 'cancel') {
+          console.error('Delete order error:', error);
+          this.$message.error(this.$t('order.deleteFailed'));
+        }
       }
     },
     showCheckout() {

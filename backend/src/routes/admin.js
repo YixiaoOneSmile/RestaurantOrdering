@@ -95,6 +95,36 @@ router.put('/orders/:orderId/complete', async (req, res) => {
   }
 });
 
+// 删除订单
+router.delete('/orders/:orderId/remove', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    
+    // 先获取订单信息
+    const order = await Order.findByPk(orderId);
+    if (!order) {
+      return res.status(404).json({ code: 1, message: '订单不存在' });
+    }
+
+    // 保存桌台ID，用于后续更新桌台状态
+    const tableId = order.tableId;
+
+    // 删除订单
+    await order.destroy();
+
+    // 更新对应桌台状态为空闲
+    await Table.update(
+      { status: 'empty' },
+      { where: { id: tableId } }  // 只更新对应的桌台
+    );
+
+    res.json({ code: 0, message: '删除成功' });
+  } catch (error) {
+    console.error('Delete order error:', error);
+    res.status(500).json({ code: 1, message: '删除失败' });
+  }
+});
+
 // 结账
 router.post('/orders/:orderId/checkout', async (req, res) => {
   try {
