@@ -62,18 +62,31 @@
     <el-dialog
       :title="$t('order.checkoutTitle')"
       :visible.sync="checkoutVisible"
-      width="400px"
+      width="450px"
     >
       <!-- 结账内容 -->
       <div class="checkout-content">
         <!-- 支付方式 -->
         <div class="checkout-item">
           <span>{{ $t('order.paymentMethod') }}:</span>
-          <el-radio-group v-model="paymentMethod">
-            <el-radio label="cash">{{ $t('payment.cash') }}</el-radio>
-            <el-radio label="wechat">{{ $t('payment.wechat') }}</el-radio>
-            <el-radio label="alipay">{{ $t('payment.alipay') }}</el-radio>
-          </el-radio-group>
+          <div class="payment-methods">
+            <el-radio-group v-model="paymentMethod" size="large">
+              <div class="payment-row">
+                <el-radio label="cash" border>
+                  <i class="el-icon-money"></i>
+                  {{ $t('payment.cash') }}
+                </el-radio>
+                <el-radio label="wechat" border>
+                  <i class="el-icon-chat-dot-square"></i>
+                  {{ $t('payment.wechat') }}
+                </el-radio>
+                <el-radio label="alipay" border>
+                  <i class="el-icon-wallet"></i>
+                  {{ $t('payment.alipay') }}
+                </el-radio>
+              </div>
+            </el-radio-group>
+          </div>
         </div>
       </div>
       <!-- 订单详情内容 -->
@@ -705,5 +718,37 @@ export default {
 }
 .order-section {
   margin-bottom: 20px;
+}
+.payment-methods {
+  margin-top: 15px;
+}
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.payment-row .el-radio {
+  flex: 1;
+  margin-right: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 2px;
+  font-size: 16px;
+}
+.payment-row .el-radio.is-bordered {
+  padding: 0 15px;
+}
+.payment-row .el-radio i {
+  margin-right: 5px;
+  font-size: 18px;
+}
+.payment-row .el-radio.is-checked {
+  border-color: #409EFF;
+  background-color: #ecf5ff;
+}
+.el-dialog {
+  min-width: 500px;
 }
 </style> 
