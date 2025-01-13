@@ -237,6 +237,12 @@
                 <span class="amount">¥{{ row.price * row.quantity }}</span>
               </template>
             </el-table-column>
+            <!-- 操作 -->
+            <el-table-column :label="$t('common.action')" width="80" align="center">
+              <template #default="{ row }">
+                <el-button type="danger" size="small" @click="removeItem(row)">{{ $t('common.remove') }}</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
 
@@ -270,13 +276,6 @@
               @click="completeOrder"
             >
               {{ $t('order.complete') }}
-            </el-button>
-            <!-- 结账 -->
-            <el-button 
-              type="danger"
-              @click="showCheckout"
-            >
-              {{ $t('order.checkout') }}
             </el-button>
           </el-button-group>
         </div>
