@@ -4,7 +4,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import VueRouter from 'vue-router'
 import i18n from './i18n'
-import TableManagement from './pages/TableManagement.vue'
+import TableManagement from './pages/admin/TableManagement.vue'
 
 Vue.use(ElementUI, {
   i18n: (key, value) => i18n.t(key, value)
@@ -27,7 +27,7 @@ const routes = [
     path: '/table', 
     component: () => import('./layouts/OrderLayout.vue'),
     children: [
-      { path: ':tableId', component: () => import('./pages/OrderMenu.vue'), props: true }
+      { path: ':tableId', component: () => import('./pages/user/OrderMenu.vue'), props: true }
     ]
   },
   { path: '/', redirect: '/table/1' }
