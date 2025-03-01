@@ -5,24 +5,27 @@
       {{ getCurrentLangLabel }}<i class="el-icon-arrow-down el-icon--right"></i>
     </span>
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item command="zh">中文</el-dropdown-item>
-      <el-dropdown-item command="en">English</el-dropdown-item>
-      <el-dropdown-item command="ja">日本語</el-dropdown-item>
+      <el-dropdown-item v-for="(config, lang) in languages" 
+                       :key="lang" 
+                       :command="lang">
+        {{ config.label }}
+      </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
 </template>
 
 <script>
+import { LANGUAGE_CONFIG } from '@/utils/i18n/language'
 export default {
   name: 'LangSwitch',
+  data() {
+    return {
+      languages: LANGUAGE_CONFIG
+    }
+  },
   computed: {
     getCurrentLangLabel() {
-      const labels = {
-        zh: '中文',
-        en: 'English',
-        ja: '日本語'
-      }
-      return labels[this.$i18n.locale]
+      return this.languages[this.$i18n.locale]?.label
     }
   },
   methods: {

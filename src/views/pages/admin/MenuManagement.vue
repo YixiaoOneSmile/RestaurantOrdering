@@ -107,7 +107,7 @@
 
 <script>
 import request from "@/utils/request";
-import {formatPrice}from "@/utils/Price"
+import {formatPrice}from "@/utils/helpers/Price"
 
 export default {
   name: "MenuManagement",
@@ -236,3 +236,4 @@ export default {
   color: #f56c6c;
 }
 </style>
+@/utils/helpers/Price

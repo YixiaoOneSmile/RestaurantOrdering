@@ -414,8 +414,8 @@
 
 <script>
 import request from "@/utils/request";
-import { formatTime } from "@/utils/time";
-import { formatPrice } from "@/utils/Price";
+import { formatTime } from "@/utils/helpers/time";
+import { formatPrice } from "@/utils/helpers/Price";
 
 export default {
   name: "TableManagement",
@@ -995,4 +995,4 @@ export default {
 .el-dialog {
   min-width: 500px;
 }
-</style>
+</style>@/utils/helpers/Price@/utils/helpers/time

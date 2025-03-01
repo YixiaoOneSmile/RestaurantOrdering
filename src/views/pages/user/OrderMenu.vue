@@ -203,7 +203,7 @@
 
 <script>
 import request from '@/utils/request'
-import { formatPrice} from '@/utils/Price.js' 
+import { formatPrice} from '@/utils/helpers/Price.js' 
 
 export default {
   name: 'OrderMenu',
@@ -716,4 +716,4 @@ export default {
   border-color: #409EFF;
   background-color: #ecf5ff;
 }
-</style> 
+</style> @/utils/helpers/Price.js

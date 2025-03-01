@@ -116,7 +116,7 @@
 
 <script>
 import request from '@/utils/request'
-import { formatTime } from '@/utils/time'
+import { formatTime } from '@/utils/helpers/time'
 
 export default {
   name: 'OrderHistory',
@@ -276,4 +276,4 @@ export default {
   color: #f56c6c;
   font-weight: bold;
 }
-</style> 
+</style> @/utils/helpers/time

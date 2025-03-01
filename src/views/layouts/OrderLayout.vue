@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import LangSwitch from '@/components/LangSwitch.vue'
+import LangSwitch from '@/views/components/base/LangSwitch.vue'
 
 export default {
   name: 'OrderLayout',
