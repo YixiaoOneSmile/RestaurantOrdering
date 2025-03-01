@@ -14,7 +14,7 @@ export default {
     to: '〜',
     startDate: '開始日',
     endDate: '終了日',
-    currency: '¥{amount}'
+    currency: '{amount} J¥'
   },
   menu: {
     title: 'レストラン管理',

@@ -14,7 +14,7 @@ export default {
     to: 'to',
     startDate: 'Start Date',
     endDate: 'End Date',
-    currency: '${amount}'
+    currency: '{amount} $'
   },
   menu: {
     title: 'Restaurant Management',

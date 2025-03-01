@@ -36,7 +36,7 @@
               <img :src="dish.image" class="dish-image">
               <div class="dish-info">
                 <div class="dish-name">{{ dish.name }}</div>
-                <div class="dish-price">{{ $t('common.currency', { amount: dish.price }) }}</div>
+                <div class="dish-price">{{ dish.price }} {{formatPrice(dish)}}</div>
               </div>
               <div class="dish-action">
                 <template v-if="getCartQuantity(dish.id) > 0">
@@ -67,7 +67,11 @@
         <!-- 购物车数量和金额 -->
         <template v-if="cartItems.length">
           <span class="total-count">{{ $t('order.selectedItems', { count: getTotalCount() }) }}</span>
-          <span class="total-amount">{{ $t('common.currency', { amount: totalAmount }) }}</span>
+          <div class="total-amount">
+            <div v-for="(amount, currency) in cartTotalsByCurrency" :key="currency">
+               {{ amount }} {{ formatPrice({ currency: currency }) }}
+           </div>
+          </div>
         </template>
         <!-- 查看已点菜品 -->
         <el-button 
@@ -118,14 +122,17 @@
         <!-- 金额 -->
         <el-table-column label="金额" width="120">
           <template #default="{ row }">
-            <span class="amount">¥{{ row.price * row.quantity }}</span>
+            <span class="amount">{{ row.price * row.quantity }} {{ formatPrice({ currency: row.currency }) }}</span>
           </template>
         </el-table-column>
       </el-table>
       <!-- 合计 -->
       <div class="order-total">
         <span>合计：</span>
-        <span class="total-amount">¥{{ currentOrder?.totalAmount }}</span>
+        <span class="total-amount"><span v-for="(amount, currency) in orderTotalsByCurrency" :key="currency">
+          {{ amount }} {{ formatPrice({ currency: currency }) }}&nbsp;
+          </span>
+        </span>
       </div>
     </el-dialog>
     <!-- 结账弹窗 -->
@@ -196,6 +203,7 @@
 
 <script>
 import request from '@/utils/request'
+import { formatPrice} from '@/utils/Price.js' 
 
 export default {
   name: 'OrderMenu',
@@ -225,9 +233,30 @@ export default {
     currentCategoryDishes() {
       return this.dishes.filter(dish => dish.categoryId === this.activeCategory)
     },
+    // 计算当前购物车中所有菜品的总金额
     totalAmount() {
       return this.cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    }
+    },
+    // 根据货币计算购物车中菜品的总金额
+    cartTotalsByCurrency() {
+    return this.cartItems.reduce((acc, item) => {
+      const curr = item.currency
+      if (!acc[curr]) {
+        acc[curr] = 0
+      }
+      acc[curr] += item.price * item.quantity
+      return acc
+    }, {})
+    },
+    // 根据货币计算订单中总计的总金额
+    orderTotalsByCurrency() {
+    if (!this.currentOrder || !this.currentOrder.items) return {}
+    return this.currentOrder.items.reduce((acc, item) => {
+      const curr = item.currency
+      acc[curr] = (acc[curr] || 0) + item.price * item.quantity
+      return acc
+    }, {})
+    },
   },
   async created() {
     await this.loadCurrentOrder()
@@ -242,6 +271,8 @@ export default {
     this.stopAutoRefresh()
   },
   methods: {
+    // 引入价格函数
+    formatPrice,
     // 开始自动刷新
     startAutoRefresh() {
       this.refreshTimer = setInterval(() => {
@@ -297,7 +328,8 @@ export default {
           id: dish.id,
           name: dish.name,
           price: dish.price,
-          quantity: delta
+          quantity: delta,
+          currency: dish.currency
         })
       }
     },
@@ -343,7 +375,8 @@ export default {
             dishId: item.id,
             quantity: item.quantity,
             name: item.name,
-            price: item.price
+            price: item.price,
+            currency: item.currency
           })),
           totalAmount: this.totalAmount
         }
@@ -404,7 +437,12 @@ export default {
       } finally {
         this.checkoutLoading = false
       }
-    }
+    },
+
+
+    test(data) {
+    console.log('当前行数据：:::::::', data)
+  },
   }
 }
 </script>

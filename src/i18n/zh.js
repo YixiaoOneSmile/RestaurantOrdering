@@ -14,7 +14,7 @@ export default {
     to: '至',
     startDate: '开始日期',
     endDate: '结束日期',
-    currency: '¥{amount}',
+    currency: '{amount} C¥',
     tip: '提示',
     remove: '删除',
     action: '操作'
@@ -93,6 +93,12 @@ export default {
     price: '价格',
     category: '分类',
     image: '图片',
+    currency: '货币单位',
+    currencies: {
+      CNY: '人民币 (¥)',
+      JPY: '日元 (¥)',
+      USD: '美元 ($)'
+    },
     categories: {
       hot: '热菜',
       cold: '凉菜',
