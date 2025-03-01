@@ -8,6 +8,4 @@ function formatPrice (row)
   return `${symbols[row.currency]}`;
 }
 
-
-
 module.exports ={ formatPrice}
