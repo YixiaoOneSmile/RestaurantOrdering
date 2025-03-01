@@ -15,6 +15,14 @@ module.exports = (sequelize) => {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false
     },
+    currency: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'JPY',
+      validate: {
+        isIn: [['CNY', 'JPY', 'USD']]  // 人民币、日元、美元
+      }
+    },
     categoryId: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -29,7 +29,7 @@ async function startServer() {
 
     // 连接数据库
     await sequelize.authenticate();
-    console.log('Database connection established');
+    console.log('数据库连接已建立');
 
     // 初始化数据库
     await initializeDatabase();
