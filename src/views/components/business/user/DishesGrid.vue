@@ -7,7 +7,7 @@
     >
       <img :src="dish.image" class="dish-image">
       <div class="dish-info">
-        <div class="dish-name" @click="test(dish)">{{ dish.name }}</div>
+        <div class="dish-name" @click="test(dish)">{{ getDishName(dish) }}</div>
         <div class="dish-price">
           {{ dish.price }} {{ formatPrice(dish) }}
         </div>
@@ -49,7 +49,17 @@ export default {
       required: true
     }
     },
-  methods: {
+    methods: {
+    getDishName(dish) {
+      const locale = this.$i18n.locale;
+      if (locale.startsWith('zh')) {
+        return dish.nameCN;
+      } else if (locale.startsWith('ja')) {
+        return dish.nameJP;
+      } else {
+        return dish.name;
+      }
+    },
     test(dish) {
       console.log('测试:::::::::::',dish)
     }
