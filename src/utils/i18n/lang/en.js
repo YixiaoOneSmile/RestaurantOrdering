@@ -20,7 +20,7 @@ export default {
     title: 'Restaurant Management',
     tables: 'Tables',
     tableSettings: 'Table Settings',
-    dishes: 'Menu',
+    dishes: 'Menu Management',
     orders: 'Orders'
   },
   table: {
@@ -40,12 +40,14 @@ export default {
     viewQRCode: 'View QR Code',
     unknownStatus: 'Unknown Status',
     selectTableFirst: 'Please select a table first',
-    people: ' people'
+    people: ' people',
+    addSuccess: 'Table added successfully',
+    numberExists: 'Table number already exists'
   },
   order: {
     orderNo: 'Order No.',
     tableNo: 'Table No.',
-    items: 'Items',
+    items: 'Dishes',
     amount: 'Amount',
     status: 'Status',
     orderTime: 'Order Time',
@@ -71,16 +73,29 @@ export default {
       completed: 'Completed'
     },
     selectedItems: '{count} items selected',
-    viewOrdered: 'View ordered',
-    submit: 'Submit Order'
+    viewOrdered: 'View Ordered',
+    submit: 'Submit Order',
+    originalItems: 'Original Dishes',
+    appendedItems: 'Additional Dishes',
+    deleteItem: 'Delete Dish',
+    deleteConfirm: 'Are you sure you want to delete this dish?',
+    deleteSuccess: 'Dish deleted successfully',
+    deleteFailed: 'Failed to delete dish'
   },
   dishes: {
     add: 'Add Dish',
     edit: 'Edit Dish',
     delete: 'Delete Dish',
-    name: 'Dish Name',
+    name: 'Name',
     price: 'Price',
     category: 'Category',
+    image: 'Image',
+    currency: 'Currency Unit',
+    currencies: {
+      CNY: 'Chinese Yuan (¥)',
+      JPY: 'Japanese Yen (¥)',
+      USD: 'US Dollar ($)'
+    },
     categories: {
       hot: 'Hot Dishes',
       cold: 'Cold Dishes',
@@ -96,4 +111,4 @@ export default {
   restaurant: {
     name: 'Delicious Restaurant'
   }
-} 
+}

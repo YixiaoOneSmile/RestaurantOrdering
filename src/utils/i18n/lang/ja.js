@@ -40,7 +40,9 @@ export default {
     viewQRCode: 'QRコードを表示',
     unknownStatus: '不明な状態',
     selectTableFirst: 'テーブルを選択してください',
-    people: '人'
+    people: '人',
+    addSuccess: 'テーブル追加成功',
+    numberExists: 'そのテーブル番号は既に存在します'
   },
   order: {
     orderNo: '注文番号',
@@ -72,7 +74,13 @@ export default {
     },
     selectedItems: '{count}点選択',
     viewOrdered: '注文履歴',
-    submit: '注文する'
+    submit: '注文する',
+    originalItems: '元の料理',
+    appendedItems: '追加料理',
+    deleteItem: '料理削除',
+    deleteConfirm: 'この料理を削除してよろしいですか？',
+    deleteSuccess: '削除成功',
+    deleteFailed: '削除失敗'
   },
   dishes: {
     add: '料理追加',
@@ -81,6 +89,13 @@ export default {
     name: '料理名',
     price: '価格',
     category: 'カテゴリー',
+    image: '画像',
+    currency: '通貨単位',
+    currencies: {
+      CNY: '人民元 (¥)',
+      JPY: '日本円 (¥)',
+      USD: '米ドル ($)'
+    },
     categories: {
       hot: '温かい料理',
       cold: '冷たい料理',
@@ -96,4 +111,4 @@ export default {
   restaurant: {
     name: '美味しいレストラン'
   }
-} 
+}

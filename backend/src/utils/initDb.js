@@ -1,17 +1,16 @@
-const { sequelize, Table, MenuItem } = require('../models/db/database');
-const fs = require('fs');
-const path = require('path');
+const {  sequelize,Table, MenuItem } = require('../models/db/database');
 
 async function initializeDatabase() {
   try {
-    // 检查数据库文件是否存在
-    const dbPath = path.join(__dirname, '../../db/restaurant.sqlite');
-    const dbExists = fs.existsSync(dbPath);
+    // 检查是否已有数据
+    const tableCount = await Table.count();
+    const menuItemCount = await MenuItem.count();
+    
+    
 
     // 只在没有任何数据时初始化
-    if (!dbExists) {
-      await sequelize.sync({ force: true });
-
+    if (tableCount === 0 && menuItemCount === 0) {
+      await sequelize.sync({ alter: true });
       await Promise.all([
         // 创建初始桌台
         Table.bulkCreate([
