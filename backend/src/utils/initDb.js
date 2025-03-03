@@ -2,15 +2,12 @@ const {  sequelize,Table, MenuItem } = require('../models/db/database');
 
 async function initializeDatabase() {
   try {
+    await sequelize.sync();
     // 检查是否已有数据
     const tableCount = await Table.count();
     const menuItemCount = await MenuItem.count();
-    
-    
 
-    // 只在没有任何数据时初始化
     if (tableCount === 0 && menuItemCount === 0) {
-      await sequelize.sync({ alter: true });
       await Promise.all([
         // 创建初始桌台
         Table.bulkCreate([
@@ -31,7 +28,7 @@ async function initializeDatabase() {
           { name: '可乐', price: 5, categoryId: 4, image: 'https://tse4-mm.cn.bing.net/th/id/OIP-C.ln6jMUbvoMhcPObv6pa4EQHaHa?w=189&h=189&c=7&r=0&o=5&dpr=1.5&pid=1.7', currency: 'CNY' }
         ])
       ]);
-
+      
       console.log('测试数据初始化成功');
     }
   } catch (error) {
