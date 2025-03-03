@@ -2,7 +2,9 @@
   <div class="order-menu">
     <!-- 顶部信息 -->
     <div class="header">
-      <div class="table-info">{{ $t('table.numberFormat', { number: tableId }) }}</div>
+      <div class="table-info">
+        {{ $t("table.numberFormat", { number: tableId }) }}
+      </div>
       <div class="order-status" v-if="currentOrder">
         <el-tag :type="getOrderStatusType(currentOrder.status)">
           {{ $t(`order.statusTypes.${currentOrder.status}`) }}
@@ -14,47 +16,26 @@
       <el-container>
         <!-- 左侧分类 -->
         <el-aside width="100px">
-          <div 
-            v-for="category in categories" 
+          <div
+            v-for="category in categories"
             :key="category.id"
-            :class="['category-item', { active: activeCategory === category.id }]"
+            :class="[
+              'category-item',
+              { active: activeCategory === category.id },
+            ]"
             @click="activeCategory = category.id"
           >
             {{ $t(`dishes.categories.${category.key}`) }}
           </div>
         </el-aside>
 
-        <!-- 右侧菜品 -->
         <el-main>
-          <div class="dishes-grid">
-            <div 
-              v-for="dish in currentCategoryDishes" 
-              :key="dish.id" 
-              class="dish-card"
-            >
-              <img :src="dish.image" class="dish-image">
-              <div class="dish-info">
-                <div class="dish-name">{{ dish.name }}</div>
-                <div class="dish-price">{{ dish.price }} {{formatPrice(dish)}}</div>
-              </div>
-              <div class="dish-action">
-                <template v-if="getCartQuantity(dish.id) > 0">
-                  <el-button 
-                    type="text" 
-                    icon="el-icon-minus"
-                    @click="updateCart(dish, -1)"
-                  />
-                  <span class="quantity">{{ getCartQuantity(dish.id) }}</span>
-                </template>
-                <el-button 
-                  type="primary" 
-                  icon="el-icon-plus"
-                  circle
-                  @click="updateCart(dish, 1)"
-                />
-              </div>
-            </div>
-          </div>
+          <DishesGrid
+            :dishes="currentCategoryDishes"
+            :getCartQuantity="getCartQuantity"
+            :formatPrice="formatPrice"
+            @update-cart="updateCart"
+          />
         </el-main>
       </el-container>
     </div>
@@ -64,52 +45,49 @@
       <div class="cart-info">
         <!-- 购物车数量和金额 -->
         <template v-if="cartItems.length">
-          <span class="total-count">{{ $t('order.selectedItems', { count: getTotalCount() }) }}</span>
+          <span class="total-count">{{
+            $t("order.selectedItems", { count: getTotalCount() })
+          }}</span>
           <div class="total-amount">
-            <div v-for="(amount, currency) in cartTotalsByCurrency" :key="currency">
-               {{ amount }} {{ formatPrice({ currency: currency }) }}
-           </div>
+            <div
+              v-for="(amount, currency) in cartTotalsByCurrency"
+              :key="currency"
+            >
+              {{ amount }} {{ formatPrice({ currency: currency }) }}
+            </div>
           </div>
         </template>
         <!-- 查看已点菜品 -->
-        <el-button 
-          v-if="currentOrder"
-          type="text"
-          @click="showOrderDetail"
-        >
-          {{ $t('order.viewOrdered') }} <i class="el-icon-arrow-right"></i>
+        <el-button v-if="currentOrder" type="text" @click="showOrderDetail">
+          {{ $t("order.viewOrdered") }} <i class="el-icon-arrow-right"></i>
         </el-button>
       </div>
       <!-- 结账 -->
-      <el-button 
+      <el-button
         type="danger"
-        size="large" 
+        size="large"
         @click="showCheckoutDialog"
         :loading="checkoutLoading"
         v-if="currentOrder && currentOrder.status === 'dining'"
       >
-        {{ $t('order.checkout') }}
+        {{ $t("order.checkout") }}
       </el-button>
       <!-- 提交订单 -->
-      <el-button 
-        type="primary" 
-        size="large" 
+      <el-button
+        type="primary"
+        size="large"
         :disabled="!cartItems.length"
         @click="submitOrder"
         :loading="loading"
       >
-        {{ currentOrder ? $t('order.addDish') : $t('order.submit') }}
+        {{ currentOrder ? $t("order.addDish") : $t("order.submit") }}
       </el-button>
     </div>
     <!-- 已点菜品弹窗 -->
-    <el-dialog
-      title="已点菜品"
-      :visible.sync="orderDetailVisible"
-      width="90%"
-    >
+    <el-dialog title="已点菜品" :visible.sync="orderDetailVisible" width="90%">
       <!-- 已点菜品列表 -->
       <el-table :data="currentOrder?.items" style="width: 100%">
-        <!-- 菜品名称 --> 
+        <!-- 菜品名称 -->
         <el-table-column prop="name" label="菜品"></el-table-column>
         <!-- 数量 -->
         <el-table-column prop="quantity" label="数量" width="100">
@@ -120,15 +98,22 @@
         <!-- 金额 -->
         <el-table-column label="金额" width="120">
           <template #default="{ row }">
-            <span class="amount">{{ row.price * row.quantity }} {{ formatPrice({ currency: row.currency }) }}</span>
+            <span class="amount"
+              >{{ row.price * row.quantity }}
+              {{ formatPrice({ currency: row.currency }) }}</span
+            >
           </template>
         </el-table-column>
       </el-table>
       <!-- 合计 -->
       <div class="order-total">
         <span>合计：</span>
-        <span class="total-amount"><span v-for="(amount, currency) in orderTotalsByCurrency" :key="currency">
-          {{ amount }} {{ formatPrice({ currency: currency }) }}&nbsp;
+        <span class="total-amount"
+          ><span
+            v-for="(amount, currency) in orderTotalsByCurrency"
+            :key="currency"
+          >
+            {{ amount }} {{ formatPrice({ currency: currency }) }}&nbsp;
           </span>
         </span>
       </div>
@@ -145,22 +130,22 @@
       <div class="checkout-content">
         <!-- 支付方式 -->
         <div class="payment-method">
-          <div class="label">{{ $t('order.paymentMethod') }}:</div>
+          <div class="label">{{ $t("order.paymentMethod") }}:</div>
           <el-radio-group v-model="paymentMethod" size="large">
             <el-radio label="wechat" border>
               <i class="el-icon-money"></i>
-              {{ $t('payment.wechat') }}
+              {{ $t("payment.wechat") }}
             </el-radio>
             <el-radio label="alipay" border>
               <i class="el-icon-wallet"></i>
-              {{ $t('payment.alipay') }}
+              {{ $t("payment.alipay") }}
             </el-radio>
           </el-radio-group>
         </div>
       </div>
       <!-- 已点菜品列表 -->
       <el-table :data="currentOrder?.items" style="width: 100%">
-        <!-- 菜品名称 --> 
+        <!-- 菜品名称 -->
         <el-table-column prop="name" label="菜品"></el-table-column>
         <!-- 数量 -->
         <el-table-column prop="quantity" label="数量" width="100">
@@ -183,16 +168,16 @@
       <!-- 结账按钮 -->
       <span slot="footer" class="dialog-footer">
         <el-button size="large" @click="checkoutVisible = false">
-          {{ $t('common.cancel') }}
+          {{ $t("common.cancel") }}
         </el-button>
-        <el-button 
+        <el-button
           type="primary"
           size="large"
           @click="handleCheckout"
           :loading="checkoutLoading"
           :disabled="!paymentMethod"
         >
-          {{ $t('order.confirmCheckout') }}
+          {{ $t("order.confirmCheckout") }}
         </el-button>
       </span>
     </el-dialog>
@@ -200,20 +185,24 @@
 </template>
 
 <script>
-import request from '@/utils/request'
-import { formatPrice} from '@/utils/helpers/Price.js' 
+import request from "@/utils/request";
+import { formatPrice } from "@/utils/helpers/Price.js";
+import DishesGrid from "@/views/components/business/user/DishesGrid.vue";
 
 export default {
-  name: 'OrderMenu',
+  name: "OrderMenu",
+  components: {
+    DishesGrid,
+  },
   data() {
     return {
       tableId: this.$route.params.tableId,
       activeCategory: null,
       categories: [
-        { id: 1, key: 'hot' },
-        { id: 2, key: 'cold' },
-        { id: 3, key: 'staple' },
-        { id: 4, key: 'beverage' }
+        { id: 1, key: "hot" },
+        { id: 2, key: "cold" },
+        { id: 3, key: "staple" },
+        { id: 4, key: "beverage" },
       ],
       dishes: [],
       cartItems: [],
@@ -224,49 +213,54 @@ export default {
       orderDetailVisible: false,
       checkoutVisible: false,
       checkoutLoading: false,
-      paymentMethod: 'cash'
-    }
+      paymentMethod: "cash",
+    };
   },
   computed: {
     currentCategoryDishes() {
-      return this.dishes.filter(dish => dish.categoryId === this.activeCategory)
+      return this.dishes.filter(
+        (dish) => dish.categoryId === this.activeCategory
+      );
     },
     // 计算当前购物车中所有菜品的总金额
     totalAmount() {
-      return this.cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      return this.cartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
     },
     // 根据货币计算购物车中菜品的总金额
     cartTotalsByCurrency() {
-    return this.cartItems.reduce((acc, item) => {
-      const curr = item.currency
-      if (!acc[curr]) {
-        acc[curr] = 0
-      }
-      acc[curr] += item.price * item.quantity
-      return acc
-    }, {})
+      return this.cartItems.reduce((acc, item) => {
+        const curr = item.currency;
+        if (!acc[curr]) {
+          acc[curr] = 0;
+        }
+        acc[curr] += item.price * item.quantity;
+        return acc;
+      }, {});
     },
     // 根据货币计算订单中总计的总金额
     orderTotalsByCurrency() {
-    if (!this.currentOrder || !this.currentOrder.items) return {}
-    return this.currentOrder.items.reduce((acc, item) => {
-      const curr = item.currency
-      acc[curr] = (acc[curr] || 0) + item.price * item.quantity
-      return acc
-    }, {})
+      if (!this.currentOrder || !this.currentOrder.items) return {};
+      return this.currentOrder.items.reduce((acc, item) => {
+        const curr = item.currency;
+        acc[curr] = (acc[curr] || 0) + item.price * item.quantity;
+        return acc;
+      }, {});
     },
   },
   async created() {
-    await this.loadCurrentOrder()
+    await this.loadCurrentOrder();
     // 如果没有订单，显示选择人数弹窗
     if (!this.currentOrder) {
-      this.peopleCountVisible = true
+      this.peopleCountVisible = true;
     }
-    this.loadInitialData()
-    this.startAutoRefresh()
+    this.loadInitialData();
+    this.startAutoRefresh();
   },
   beforeDestroy() {
-    this.stopAutoRefresh()
+    this.stopAutoRefresh();
   },
   methods: {
     // 引入价格函数
@@ -274,52 +268,51 @@ export default {
     // 开始自动刷新
     startAutoRefresh() {
       this.refreshTimer = setInterval(() => {
-        this.loadCurrentOrder()
-      }, 10000) // 每10秒刷新一次
+        this.loadCurrentOrder();
+      }, 10000); // 每10秒刷新一次
     },
     // 停止自动刷新
     stopAutoRefresh() {
       if (this.refreshTimer) {
-        clearInterval(this.refreshTimer)
+        clearInterval(this.refreshTimer);
       }
     },
     // 加载初始数据
     async loadInitialData() {
-      await Promise.all([
-        this.loadDishes(),
-        this.loadCurrentOrder()
-      ])
+      await Promise.all([this.loadDishes(), this.loadCurrentOrder()]);
     },
     // 加载菜品
     async loadDishes() {
       try {
-        const res = await request.get('/api/dishes')
-        this.dishes = res.data
+        const res = await request.get("/api/dishes");
+        this.dishes = res.data;
       } catch (error) {
-        this.$message.error('加载菜品失败')
+        this.$message.error("加载菜品失败");
       }
     },
     // 加载当前订单
     async loadCurrentOrder() {
       try {
-        const res = await request.get(`/api/tables/${this.tableId}/current-order`)
-        this.currentOrder = res.data
+        const res = await request.get(
+          `/api/tables/${this.tableId}/current-order`
+        );
+        this.currentOrder = res.data;
       } catch (error) {
-        console.error('加载当前订单失败:', error)
+        console.error("加载当前订单失败:", error);
       }
     },
     // 获取购物车中菜品数量
     getCartQuantity(dishId) {
-      const item = this.cartItems.find(item => item.id === dishId)
-      return item ? item.quantity : 0
+      const item = this.cartItems.find((item) => item.id === dishId);
+      return item ? item.quantity : 0;
     },
     // 更新购物车
     updateCart(dish, delta) {
-      const item = this.cartItems.find(item => item.id === dish.id)
+      const item = this.cartItems.find((item) => item.id === dish.id);
       if (item) {
-        item.quantity += delta
+        item.quantity += delta;
         if (item.quantity <= 0) {
-          this.cartItems = this.cartItems.filter(i => i.id !== dish.id)
+          this.cartItems = this.cartItems.filter((i) => i.id !== dish.id);
         }
       } else if (delta > 0) {
         this.cartItems.push({
@@ -327,122 +320,124 @@ export default {
           name: dish.name,
           price: dish.price,
           quantity: delta,
-          currency: dish.currency
-        })
+          currency: dish.currency,
+        });
       }
     },
     // 获取订单状态类型
     getOrderStatusType(status) {
       const typeMap = {
-        'ordering': 'info',
-        'processing': 'warning',
-        'dining': 'success',
-        'completed': 'success'
-      }
-      return typeMap[status] || 'info'
+        ordering: "info",
+        processing: "warning",
+        dining: "success",
+        completed: "success",
+      };
+      return typeMap[status] || "info";
     },
     // 获取订单状态文本
     getOrderStatusText(status) {
       const textMap = {
-        'ordering': '已下单',
-        'processing': '处理中',
-        'dining': '就餐中',
-        'completed': '已完成'
-      }
-      return textMap[status] || '未知状态'
+        ordering: "已下单",
+        processing: "处理中",
+        dining: "就餐中",
+        completed: "已完成",
+      };
+      return textMap[status] || "未知状态";
     },
     // 获取提交订单按钮文本
     getSubmitButtonText() {
-      if (!this.cartItems.length) return '请选择菜品'
-      if (this.currentOrder?.status === 'processing') return '订单处理中'
-      return '提交订单'
+      if (!this.cartItems.length) return "请选择菜品";
+      if (this.currentOrder?.status === "processing") return "订单处理中";
+      return "提交订单";
     },
     // 确认人数
     async confirmPeopleCount() {
-      this.peopleCountVisible = false
-      this.showMenuSection = true
+      this.peopleCountVisible = false;
+      this.showMenuSection = true;
     },
     // 提交订单
     async submitOrder() {
-      if (this.loading) return
-      this.loading = true
+      if (this.loading) return;
+      this.loading = true;
       try {
         const orderData = {
           tableId: parseInt(this.tableId),
-          items: this.cartItems.map(item => ({
+          items: this.cartItems.map((item) => ({
             dishId: item.id,
             quantity: item.quantity,
             name: item.name,
             price: item.price,
-            currency: item.currency
+            currency: item.currency,
           })),
-          totalAmount: this.totalAmount
-        }
+          totalAmount: this.totalAmount,
+        };
         // 追加菜品
         if (this.currentOrder) {
-          await request.post(`/api/orders/${this.currentOrder.id}/append`, orderData)
-          this.$message.success('加菜成功')
+          await request.post(
+            `/api/orders/${this.currentOrder.id}/append`,
+            orderData
+          );
+          this.$message.success("加菜成功");
         } else {
           // 新建订单
-          orderData.peopleCount = this.peopleCount
-          await request.post('/api/orders', orderData)
-          this.$message.success('下单成功')
+          orderData.peopleCount = this.peopleCount;
+          await request.post("/api/orders", orderData);
+          this.$message.success("下单成功");
         }
-        await this.loadCurrentOrder()
-        this.cartItems = [] // 清空购物车
-        this.orderDetailVisible = true  // 提交后显示订单详情
+        await this.loadCurrentOrder();
+        this.cartItems = []; // 清空购物车
+        this.orderDetailVisible = true; // 提交后显示订单详情
       } catch (error) {
-        console.error('Submit order error:', error)
-        this.$message.error(this.currentOrder ? '加菜失败' : '下单失败')
+        console.error("Submit order error:", error);
+        this.$message.error(this.currentOrder ? "加菜失败" : "下单失败");
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
     // 获取购物车中菜品总数
     getTotalCount() {
-      return this.cartItems.reduce((sum, item) => sum + item.quantity, 0)
+      return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);
     },
     // 显示已点菜品详情
     showOrderDetail() {
-      this.orderDetailVisible = true
+      this.orderDetailVisible = true;
     },
     // 显示结账弹窗
     showCheckoutDialog() {
-      if (!this.currentOrder || this.currentOrder.status !== 'dining') return
-      this.checkoutVisible = true
-      this.paymentMethod = 'cash'
+      if (!this.currentOrder || this.currentOrder.status !== "dining") return;
+      this.checkoutVisible = true;
+      this.paymentMethod = "cash";
     },
     // 处理结账
     async handleCheckout() {
-      if (!this.currentOrder || this.checkoutLoading) return
-      this.checkoutLoading = true
-      
+      if (!this.currentOrder || this.checkoutLoading) return;
+      this.checkoutLoading = true;
+
       try {
         await request.post(`/api/orders/${this.currentOrder.id}/checkout`, {
           paymentMethod: this.paymentMethod,
-          tableId: this.tableId
-        })
-        
-        this.$message.success('结账成功')
-        this.checkoutVisible = false
-        await this.loadCurrentOrder()
+          tableId: this.tableId,
+        });
+
+        this.$message.success("结账成功");
+        this.checkoutVisible = false;
+        await this.loadCurrentOrder();
         setTimeout(() => {
-          this.$router.push('/')
-        }, 1500)
+          this.$router.push("/");
+        }, 1500);
       } catch (error) {
-        console.error('Checkout error:', error)
-        this.$message.error('结账失败')
+        console.error("Checkout error:", error);
+        this.$message.error("结账失败");
       } finally {
-        this.checkoutLoading = false
+        this.checkoutLoading = false;
       }
     },
 
-
     test(data) {
-    console.log('当前行数据：:::::::', data)
+      console.log("当前行数据：:::::::", data);
+    },
   },
-  }
-}
+};
 </script>
 
 <style scoped>
@@ -482,24 +477,24 @@ export default {
 
 .category-item:hover {
   background-color: #f5f7fa;
-  color: #409EFF;
+  color: #409eff;
 }
 
 .category-item.active {
   background-color: #fff;
-  color: #409EFF;
+  color: #409eff;
   font-weight: bold;
   position: relative;
 }
 
 .category-item.active::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
   width: 3px;
-  background-color: #409EFF;
+  background-color: #409eff;
 }
 
 .dishes-grid {
@@ -711,7 +706,7 @@ export default {
 
 /* 支付方式选中状态样式 */
 .payment-method .el-radio.is-bordered.is-checked {
-  border-color: #409EFF;
+  border-color: #409eff;
   background-color: #ecf5ff;
 }
 </style>
