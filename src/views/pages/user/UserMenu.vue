@@ -9,7 +9,6 @@
         </el-tag>
       </div>
     </div>
-
     <!-- 菜品列表区域 -->
     <div class="menu-content">
       <el-container>
@@ -59,7 +58,6 @@
         </el-main>
       </el-container>
     </div>
-
     <!-- 底部操作栏 -->
     <div class="bottom-bar">
       <!-- 购物车信息 -->
@@ -716,4 +714,4 @@ export default {
   border-color: #409EFF;
   background-color: #ecf5ff;
 }
-</style> @/utils/helpers/Price.js
+</style>

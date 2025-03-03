@@ -27,7 +27,7 @@ const routes = [
     path: '/table', 
     component: () => import('./views/layouts/OrderLayout.vue'),
     children: [
-      { path: ':tableId', component: () => import('./views/pages/user/OrderMenu.vue'), props: true }
+      { path: ':tableId', component: () => import('./views/pages/user/UserMenu.vue'), props: true }
     ]
   },
   { path: '/', redirect: '/table/1' }

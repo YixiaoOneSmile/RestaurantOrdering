@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { sequelize } = require('./models');
+const { sequelize } = require('./models/db/database');
 const initializeDatabase = require('./utils/initDb');
 const adminRoutes = require('./routes/admin');
 const orderRoutes = require('./routes/order');
@@ -25,6 +25,7 @@ async function startServer() {
     const dbDir = path.join(__dirname, '../db');
     if (!fs.existsSync(dbDir)) {
       fs.mkdirSync(dbDir, { recursive: true });
+      console.log('数据库目录创建成功,正常情况下要初始化数据库');
     }
 
     // 连接数据库

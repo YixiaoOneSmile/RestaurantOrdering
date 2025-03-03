@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Op } = require('sequelize');
-const { Order, Table, MenuItem } = require('../models');
+const { Order, Table, MenuItem } = require('../models/db/database');
 
 // 获取所有桌台状态
 router.get('/tables', async (req, res) => {

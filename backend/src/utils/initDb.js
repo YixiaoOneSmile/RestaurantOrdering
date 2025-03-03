@@ -1,35 +1,17 @@
-const { sequelize, Table, MenuItem } = require('../models');
+const { sequelize, Table, MenuItem } = require('../models/db/database');
 const fs = require('fs');
 const path = require('path');
 
 async function initializeDatabase() {
   try {
     // 检查数据库文件是否存在
-    const dbPath = path.join(__dirname, '../../db/database.sqlite');
+    const dbPath = path.join(__dirname, '../../db/restaurant.sqlite');
     const dbExists = fs.existsSync(dbPath);
-    
-    // 如果数据库文件存在且需要重建，则删除它
-    if (dbExists) {
-      try {
-        await sequelize.close(); // 关闭连接
-        fs.unlinkSync(dbPath); // 删除文件
-        console.log('Existing database file removed');
-      } catch (error) {
-        console.error('Error removing database file:', error);
-      }
-    }
 
-    // 同步数据库结构
-    await sequelize.sync({ force: true }); // 强制重建表
-
-    // 检查是否需要初始化测试数据
-    const tableCount = await Table.count();
-    const menuItemCount = await MenuItem.count();
-    
     // 只在没有任何数据时初始化
-    if (tableCount === 0 && menuItemCount === 0) {
-      console.log('Initializing test data...');
-      
+    if (!dbExists) {
+      await sequelize.sync({ force: true });
+
       await Promise.all([
         // 创建初始桌台
         Table.bulkCreate([
@@ -52,8 +34,6 @@ async function initializeDatabase() {
       ]);
 
       console.log('测试数据初始化成功');
-    } else {
-      console.log('数据库已包含数据，跳过初始化');
     }
   } catch (error) {
     console.error('数据库初始化错误:', error);

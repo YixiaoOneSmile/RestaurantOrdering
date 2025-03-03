@@ -117,6 +117,7 @@
 <script>
 import request from '@/utils/request'
 import { formatTime } from '@/utils/helpers/time'
+import { getStatusType, getStatusText, getPaymentMethodText } from '@/utils/models/orderStatus'
 
 export default {
   name: 'OrderHistory',
@@ -160,6 +161,10 @@ export default {
   },
   methods: {
     formatTime,
+    getStatusType,
+    getStatusText,
+    getPaymentMethodText,
+
     async loadOrders() {
       this.loading = true
       try {
@@ -182,32 +187,6 @@ export default {
     },
     search() {
       this.loadOrders()
-    },
-    getStatusType(status) {
-      const typeMap = {
-        'ordering': 'info',
-        'processing': 'warning',
-        'dining': 'success',
-        'completed': 'success'
-      }
-      return typeMap[status] || 'info'
-    },
-    getStatusText(status) {
-      const textMap = {
-        'ordering': '已下单',
-        'processing': '处理中',
-        'dining': '就餐中',
-        'completed': '已完成'
-      }
-      return textMap[status] || '未知状态'
-    },
-    getPaymentMethodText(method) {
-      const methodMap = {
-        'cash': '现金',
-        'wechat': '微信',
-        'alipay': '支付宝'
-      }
-      return methodMap[method] || '未知方式'
     },
     showOrderDetail(order) {
       this.currentOrder = order

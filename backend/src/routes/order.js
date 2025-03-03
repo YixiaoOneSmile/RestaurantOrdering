@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { MenuItem, Order, Table } = require('../models');
+const { MenuItem, Order, Table } = require('../models/db/database');
 
 // 获取菜品分类
 router.get('/categories', (req, res) => {
