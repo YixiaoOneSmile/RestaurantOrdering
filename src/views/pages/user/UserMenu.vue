@@ -318,6 +318,8 @@ export default {
         this.cartItems.push({
           id: dish.id,
           name: dish.name,
+          nameCN: dish.nameCN,
+          nameJP: dish.nameJP,
           price: dish.price,
           quantity: delta,
           currency: dish.currency,
@@ -366,6 +368,8 @@ export default {
             dishId: item.id,
             quantity: item.quantity,
             name: item.name,
+            nameCN: item.nameCN,
+            nameJP: item.nameJP,
             price: item.price,
             currency: item.currency,
           })),
@@ -431,10 +435,6 @@ export default {
       } finally {
         this.checkoutLoading = false;
       }
-    },
-
-    test(data) {
-      console.log("当前行数据：:::::::", data);
     },
   },
 };

@@ -1,24 +1,26 @@
 <template>
   <el-table :data="orders" v-loading="loading">
-    <el-table-column prop="id" :label="$t('order.orderNo')" width="100"></el-table-column>
+    <el-table-column
+      prop="id"
+      :label="$t('order.orderNo')"
+      width="100"
+    ></el-table-column>
     <el-table-column prop="tableId" :label="$t('order.tableNo')" width="100">
       <template #default="{ row }">
-        {{ $t('table.numberFormat', { number: row.tableId }) }}
+        {{ $t("table.numberFormat", { number: row.tableId }) }}
       </template>
     </el-table-column>
     <el-table-column :label="$t('order.items')">
       <template #default="{ row }">
         <div class="order-items">
-          <span v-for="item in row.items" :key="item.dishId">
-            {{ item.name }} x{{ item.quantity }}
+          <span v-for="item in row.items" :key="item.dishId" >
+            {{ getDishName(item) }} x{{ item.quantity }}
           </span>
         </div>
       </template>
     </el-table-column>
     <el-table-column prop="totalAmount" :label="$t('order.amount')" width="120">
-      <template #default="{ row }">
-        ¥{{ row.totalAmount }}
-      </template>
+      <template #default="{ row }"> ¥{{ row.totalAmount }} </template>
     </el-table-column>
     <el-table-column prop="status" :label="$t('order.status')" width="120">
       <template #default="{ row }">
@@ -27,42 +29,58 @@
         </el-tag>
       </template>
     </el-table-column>
-    <el-table-column prop="createdAt" :label="$t('order.orderTime')" width="180">
+    <el-table-column
+      prop="createdAt"
+      :label="$t('order.orderTime')"
+      width="180"
+    >
       <template #default="{ row }">
         {{ formatTime(row.createdAt) }}
       </template>
     </el-table-column>
     <el-table-column :label="$t('table.operations')" width="120">
       <template #default="{ row }">
-        <el-button type="text" @click="$emit('show-detail', row)">{{ $t('order.details') }}</el-button>
+        <el-button type="text" @click="$emit('show-detail', row)">{{
+          $t("order.details")
+        }}</el-button>
       </template>
     </el-table-column>
   </el-table>
 </template>
 
 <script>
-import { formatTime } from '@/utils/helpers/time'
-import { getStatusType, getStatusText, getPaymentMethodText } from '@/utils/models/orderStatus'
+import { formatTime } from "@/utils/helpers/time";
+import {
+  getStatusType,
+  getStatusText,
+  getPaymentMethodText,
+} from "@/utils/models/orderStatus";
+import { getDishName } from "@/utils/helpers/dishName";
 
 export default {
-  name: 'OrderHistoryList',
+  name: "OrderHistoryList",
   props: {
     orders: {
       type: Array,
-      required: true
+      required: true,
     },
     loading: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   methods: {
     formatTime,
     getStatusType,
     getStatusText,
-    getPaymentMethodText
-  }
-}
+    getPaymentMethodText,
+    getDishName(item) {
+      console.log("测试:::::::",item);
+      return getDishName(item, this.$i18n.locale);
+    },
+  },
+
+};
 </script>
 
 <style scoped>
