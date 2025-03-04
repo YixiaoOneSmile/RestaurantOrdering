@@ -84,40 +84,12 @@
       </el-button>
     </div>
     <!-- 已点菜品弹窗 -->
-    <el-dialog title="已点菜品" :visible.sync="orderDetailVisible" width="90%">
-      <!-- 已点菜品列表 -->
-      <el-table :data="currentOrder?.items" style="width: 100%">
-        <!-- 菜品名称 -->
-        <el-table-column prop="name" label="菜品"></el-table-column>
-        <!-- 数量 -->
-        <el-table-column prop="quantity" label="数量" width="100">
-          <template #default="{ row }">
-            <span class="quantity">x{{ row.quantity }}</span>
-          </template>
-        </el-table-column>
-        <!-- 金额 -->
-        <el-table-column label="金额" width="120">
-          <template #default="{ row }">
-            <span class="amount"
-              >{{ row.price * row.quantity }}
-              {{ formatPrice({ currency: row.currency }) }}</span
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 合计 -->
-      <div class="order-total">
-        <span>合计：</span>
-        <span class="total-amount"
-          ><span
-            v-for="(amount, currency) in orderTotalsByCurrency"
-            :key="currency"
-          >
-            {{ amount }} {{ formatPrice({ currency: currency }) }}&nbsp;
-          </span>
-        </span>
-      </div>
-    </el-dialog>
+    <OrderedDishesDialog
+      :visible.sync="orderDetailVisible"
+      :items="currentOrder?.items || []"
+      :totals="orderTotalsByCurrency"
+      :formatPrice="formatPrice"
+    />
     <!-- 结账弹窗 -->
     <el-dialog
       :title="$t('order.checkoutTitle')"
@@ -186,6 +158,7 @@
 
 <script>
 import request from "@/utils/request";
+import OrderedDishesDialog from '@/views/components/business/user/OrderedDishesDialog.vue'
 import { formatPrice } from "@/utils/helpers/Price.js";
 import DishesGrid from "@/views/components/business/user/DishesGrid.vue";
 
@@ -193,6 +166,7 @@ export default {
   name: "OrderMenu",
   components: {
     DishesGrid,
+    OrderedDishesDialog,
   },
   data() {
     return {
