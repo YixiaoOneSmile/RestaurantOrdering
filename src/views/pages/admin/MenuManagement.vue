@@ -1,5 +1,6 @@
 <template>
   <div class="menu-management">
+    
     <div class="page-header">
       <h2>{{ $t("menu.dishes") }}</h2>
       <el-button type="primary" @click="showAddDialog">
@@ -7,43 +8,13 @@
       </el-button>
     </div>
 
-    <!-- 展示菜品列表 -->
-    <el-table :data="dishes" v-loading="loading">
-      <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
-      <el-table-column prop="price" :label="$t('dishes.price')" width="120">
-        <template #default="{ row }">
-          {{row.price }} {{formatPrice(row)}}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="categoryId"
-        :label="$t('dishes.category')"
-        width="120"
-      >
-        <template #default="{ row }">
-          {{ getCategoryName(row.categoryId) }}
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('dishes.image')" width="120">
-        <template #default="{ row }">
-          <el-image
-            :src="row.image"
-            style="width: 50px; height: 50px"
-            fit="cover"
-          ></el-image>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.operations')" width="200">
-        <template #default="{ row }">
-          <el-button type="text" @click="editDish(row)">{{
-            $t("common.edit")
-          }}</el-button>
-          <el-button type="text" class="danger" @click="deleteDish(row)">{{
-            $t("common.delete")
-          }}</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <MenuList
+      :dishes="dishes"
+      :loading="loading"
+      :categories="categories"
+      @edit-dish="editDish"
+      @delete-dish="deleteDish"
+    />
 
     <!-- 添加/编辑菜品弹窗 -->
     <el-dialog
@@ -107,10 +78,13 @@
 
 <script>
 import request from "@/utils/request";
-import {formatPrice}from "@/utils/helpers/Price"
+import MenuList from "@/views/components/business/admin/MenuList.vue";
 
 export default {
   name: "MenuManagement",
+  components: {
+    MenuList,
+  },
   data() {
     return {
       dishes: [],
@@ -145,7 +119,7 @@ export default {
     this.loadDishes();
   },
   methods: {
-    formatPrice,
+
     async loadDishes() {
       this.loading = true;
       try {
@@ -236,4 +210,3 @@ export default {
   color: #f56c6c;
 }
 </style>
-@/utils/helpers/Price

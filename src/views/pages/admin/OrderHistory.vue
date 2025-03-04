@@ -1,5 +1,6 @@
 <template>
   <div class="order-history">
+
     <div class="page-header">
       <h2>{{ $t('menu.orders') }}</h2>
       <div class="filters">
@@ -23,45 +24,12 @@
       </div>
     </div>
 
-    <el-table :data="orders" v-loading="loading">
-      <el-table-column prop="id" :label="$t('order.orderNo')" width="100"></el-table-column>
-      <el-table-column prop="tableId" :label="$t('order.tableNo')" width="100">
-        <template #default="{ row }">
-          {{ $t('table.numberFormat', { number: row.tableId }) }}
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('order.items')">
-        <template #default="{ row }">
-          <div class="order-items">
-            <span v-for="item in row.items" :key="item.dishId">
-              {{ item.name }} x{{ item.quantity }}
-            </span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column prop="totalAmount" :label="$t('order.amount')" width="120">
-        <template #default="{ row }">
-          ¥{{ row.totalAmount }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="status" :label="$t('order.status')" width="120">
-        <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)">
-            {{ $t(`order.statusTypes.${row.status}`) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createdAt" :label="$t('order.orderTime')" width="180">
-        <template #default="{ row }">
-          {{ formatTime(row.createdAt) }}
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.operations')" width="120">
-        <template #default="{ row }">
-          <el-button type="text" @click="showOrderDetail(row)">{{ $t('order.details') }}</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 订单历史记录列表 -->
+    <OrderHistoryList
+      :orders="orders"
+      :loading="loading"
+      @show-detail="showOrderDetail"
+    />
 
     <!-- 订单详情弹窗 -->
     <el-dialog
@@ -118,9 +86,12 @@
 import request from '@/utils/request'
 import { formatTime } from '@/utils/helpers/time'
 import { getStatusType, getStatusText, getPaymentMethodText } from '@/utils/models/orderStatus'
-
+import OrderHistoryList from '@/views/components/business/admin/OrderHistoryList.vue'
 export default {
   name: 'OrderHistory',
+  components: {
+    OrderHistoryList
+  },
   data() {
     return {
       orders: [],
@@ -255,4 +226,4 @@ export default {
   color: #f56c6c;
   font-weight: bold;
 }
-</style> @/utils/helpers/time
+</style>

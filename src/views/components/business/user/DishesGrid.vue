@@ -1,28 +1,22 @@
 <template>
   <div class="dishes-grid">
-    <div 
-      v-for="dish in dishes" 
-      :key="dish.id" 
-      class="dish-card"
-    >
-      <img :src="dish.image" class="dish-image">
+    <div v-for="dish in dishes" :key="dish.id" class="dish-card">
+      <img :src="dish.image" class="dish-image" />
       <div class="dish-info">
-        <div class="dish-name" @click="test(dish)">{{ getDishName(dish) }}</div>
-        <div class="dish-price">
-          {{ dish.price }} {{ formatPrice(dish) }}
-        </div>
+        <div class="dish-name">{{ getDishName(dish) }}</div>
+        <div class="dish-price">{{ dish.price }} {{ formatPrice(dish) }}</div>
       </div>
       <div class="dish-action">
         <template v-if="getCartQuantity(dish.id) > 0">
-          <el-button 
-            type="text" 
+          <el-button
+            type="text"
             icon="el-icon-minus"
             @click="$emit('update-cart', dish, -1)"
           />
           <span class="quantity">{{ getCartQuantity(dish.id) }}</span>
         </template>
-        <el-button 
-          type="primary" 
+        <el-button
+          type="primary"
           icon="el-icon-plus"
           circle
           @click="$emit('update-cart', dish, 1)"
@@ -33,38 +27,33 @@
 </template>
 
 <script>
+import { getDishName as getDishNameHelper } from "@/utils/helpers/dishName.js";
+
 export default {
-  name: 'DishesGrid',
+  name: "DishesGrid",
   props: {
     dishes: {
       type: Array,
-      required: true
+      required: true,
     },
     getCartQuantity: {
       type: Function,
-      required: true
+      required: true,
     },
     formatPrice: {
       type: Function,
-      required: true
-    }
+      required: true,
     },
-    methods: {
+  },
+  methods: {
     getDishName(dish) {
-      const locale = this.$i18n.locale;
-      if (locale.startsWith('zh')) {
-        return dish.nameCN;
-      } else if (locale.startsWith('ja')) {
-        return dish.nameJP;
-      } else {
-        return dish.name;
-      }
+      return getDishNameHelper(dish, this.$i18n.locale);
     },
     test(dish) {
-      console.log('测试:::::::::::',dish)
-    }
-  }
-}
+      console.log("测试:::::::::::", dish);
+    },
+  },
+};
 </script>
 
 <style scoped>
