@@ -32,53 +32,11 @@
     />
 
     <!-- 订单详情弹窗 -->
-    <el-dialog
-      title="订单详情"
+    <OrderHistoryDialog
+      :order="currentOrder"
       :visible.sync="detailVisible"
-      width="600px"
-    >
-      <div v-if="currentOrder" class="order-detail">
-        <div class="detail-header">
-          <div class="basic-info">
-            <div>订单号：{{ currentOrder.id }}</div>
-            <div>{{ currentOrder.tableId }}号桌</div>
-            <div>{{ formatTime(currentOrder.createdAt) }}</div>
-          </div>
-          <el-tag :type="getStatusType(currentOrder.status)">
-            {{ getStatusText(currentOrder.status) }}
-          </el-tag>
-        </div>
+    />
 
-        <el-table :data="currentOrder.items">
-          <el-table-column prop="name" label="菜品"></el-table-column>
-          <el-table-column prop="price" label="单价" width="100">
-            <template #default="{ row }">
-              ¥{{ row.price }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="quantity" label="数量" width="100"></el-table-column>
-          <el-table-column label="小计" width="100">
-            <template #default="{ row }">
-              ¥{{ row.price * row.quantity }}
-            </template>
-          </el-table-column>
-        </el-table>
-
-        <div class="detail-footer">
-          <div class="time-info">
-            <div v-if="currentOrder.paidAt">
-              支付时间：{{ formatTime(currentOrder.paidAt) }}
-            </div>
-            <div v-if="currentOrder.paymentMethod">
-              支付方式：{{ getPaymentMethodText(currentOrder.paymentMethod) }}
-            </div>
-          </div>
-          <div class="total">
-            合计：<span class="amount">¥{{ currentOrder.totalAmount }}</span>
-          </div>
-        </div>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -87,10 +45,12 @@ import request from '@/utils/request'
 import { formatTime } from '@/utils/helpers/time'
 import { getStatusType, getStatusText, getPaymentMethodText } from '@/utils/models/orderStatus'
 import OrderHistoryList from '@/views/components/business/admin/OrderHistoryList.vue'
+import OrderHistoryDialog from '@/views/components/business/admin/OrderHistoryDialog.vue'
 export default {
   name: 'OrderHistory',
   components: {
-    OrderHistoryList
+    OrderHistoryList,
+    OrderHistoryDialog
   },
   data() {
     return {

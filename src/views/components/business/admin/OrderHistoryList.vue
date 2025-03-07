@@ -20,7 +20,15 @@
       </template>
     </el-table-column>
     <el-table-column prop="totalAmount" :label="$t('order.amount')" width="120">
-      <template #default="{ row }"> ¥{{ row.totalAmount }} </template>
+      <template #default="{ row }">
+        <div v-if="row.items && row.items.length">
+          <!-- 按货币单位显示各自的合计 -->
+          <div v-for="(amount, currency) in getOrderTotals(row.items)" :key="currency">
+            {{ amount }} {{ formatPrice({ currency: currency }) }}
+          </div>
+        </div>
+        <div v-else>非法单位</div>
+      </template>
     </el-table-column>
     <el-table-column prop="status" :label="$t('order.status')" width="120">
       <template #default="{ row }">
@@ -56,6 +64,7 @@ import {
   getPaymentMethodText,
 } from "@/utils/models/orderStatus";
 import { getDishName } from "@/utils/helpers/dishName";
+const { formatPrice }   = require('@/utils/helpers/Price');
 
 export default {
   name: "OrderHistoryList",
@@ -71,12 +80,19 @@ export default {
   },
   methods: {
     formatTime,
+    formatPrice,
     getStatusType,
     getStatusText,
     getPaymentMethodText,
     getDishName(item) {
-      console.log("测试:::::::",item);
       return getDishName(item, this.$i18n.locale);
+    },
+    getOrderTotals(items) {
+      return items.reduce((acc, item) => {
+        const curr = item.currency;
+        acc[curr] = (acc[curr] || 0) + item.price * item.quantity;
+        return acc;
+      }, {});
     },
   },
 
