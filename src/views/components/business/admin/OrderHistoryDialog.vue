@@ -12,41 +12,9 @@
         </el-tag>
       </div>
 
-      <el-table :data="order.items">
-        <el-table-column :label="$t('dishes.name')">
-          <template #default="{ row }">
-            {{ getDishName(row) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="price" label="单价" width="100">
-          <template #default="{ row }">
-            {{ row.price }} {{ formatPrice({ currency: row.currency }) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="quantity" label="数量" width="100" />
-        <el-table-column label="小计" width="100">
-          <template #default="{ row }">
-            {{ row.price * row.quantity }} {{ formatPrice({ currency: row.currency }) }}
-          </template>
-        </el-table-column>
-      </el-table>
+      <OrderItemsTable :items="order.items" />
 
-      <div class="detail-footer">
-        <div class="time-info">
-          <div v-if="order.paidAt">
-            支付时间：{{ formatTime(order.paidAt) }}
-          </div>
-          <div v-if="order.paymentMethod">
-            支付方式：{{ getPaymentMethodText(order.paymentMethod) }}
-          </div>
-        </div>
-        <div class="total">
-          合计：
-          <span v-for="(amount, currency) in orderTotals" :key="currency" class="amount">
-            {{ amount }} {{ formatPrice({ currency: currency }) }}&nbsp;
-          </span>
-        </div>
-      </div>
+      <OrderDetailFooter :order="order" />
 
     </div>
   </el-dialog>
@@ -57,6 +25,10 @@ import { formatTime } from '@/utils/helpers/time'
 import { getStatusType, getStatusText, getPaymentMethodText } from '@/utils/models/orderStatus'
 import { getDishName as dishNameHelper } from '@/utils/helpers/dishName'
 import { formatPrice } from '@/utils/helpers/Price'
+import OrderItemsTable from "@/views/components/business/admin/OrderListTable.vue";
+import OrderDetailFooter from "@/views/components/business/admin/OrderDetailFooter.vue";
+
+
 export default {
   name: 'OrderHistoryDialog',
   props: {
@@ -68,6 +40,10 @@ export default {
       type: Boolean,
       required: true
     }
+  },
+  components: {
+    OrderItemsTable,
+    OrderDetailFooter,
   },
   computed: {
     localVisible: {

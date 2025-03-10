@@ -83,7 +83,9 @@ export default {
     deleteItem: '删除菜品',
     deleteConfirm: '确认删除该菜品?',
     deleteSuccess: '删除成功',
-    deleteFailed: '删除失败'
+    deleteFailed: '删除失败',
+    unitPrice: '单价',
+    subtotal: '小计'
   },
   dishes: {
     add: '添加菜品',
@@ -114,4 +116,4 @@ export default {
   restaurant: {
     name: '美味餐厅'
   }
-} 
+}

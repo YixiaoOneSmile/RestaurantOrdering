@@ -11,12 +11,7 @@
             {{ $t("table.addTable") }}
           </el-button>
           <!-- 刷新桌台 -->
-          <el-button
-            type="primary"
-            size="small"
-            @click="refreshTables"
-            :loading="loading"
-          >
+          <el-button type="primary" size="small" @click="refreshTables" :loading="loading">
             {{ $t("common.refresh") }}
           </el-button>
           <!-- 查看点餐码 -->
@@ -27,13 +22,8 @@
       </div>
       <!-- 桌台列表 -->
       <div class="tables-grid">
-        <div
-          v-for="table in tables"
-          :key="table.id"
-          class="table-item"
-          :class="[table.status]"
-          @click="showTableDetail(table)"
-        >
+        <div v-for="table in tables" :key="table.id" class="table-item" :class="[table.status]"
+          @click="showTableDetail(table)">
           <div class="table-content">
             <!-- 桌号 -->
             <div class="table-number">
@@ -56,23 +46,16 @@
               <div>
                 {{ $t("order.amount") }}:
                 <span v-if="table.currentOrder && table.currentOrder.items">
-                  <span
-                    v-for="(amount, currency) in getOrderTotalsByCurrency(
+                  <span v-for="(amount, currency) in getOrderTotalsByCurrency(
                       table.currentOrder.items
-                    )"
-                    :key="currency"
-                  >
+                    )" :key="currency">
                     {{ amount }} {{ formatPrice({ currency: currency }) }}&nbsp;
                   </span>
                 </span>
               </div>
               <!-- 结账按钮 -->
-              <el-button
-                type="danger"
-                size="small"
-                @click.stop="handleCheckout(table)"
-                v-if="table.status === 'dining'"
-              >
+              <el-button type="danger" size="small" @click.stop="handleCheckout(table)"
+                v-if="table.status === 'dining'">
                 {{ $t("order.checkout") }}
               </el-button>
             </div>
@@ -81,129 +64,17 @@
       </div>
     </div>
     <!-- 结账弹窗 -->
-    <el-dialog
-      :title="$t('order.checkoutTitle')"
-      :visible.sync="checkoutVisible"
-      width="450px"
-    >
-      <!-- 结账内容 -->
-      <div class="checkout-content">
-        <!-- 支付方式 -->
-        <div class="checkout-item">
-          <span>{{ $t("order.paymentMethod") }}:</span>
-          <div class="payment-methods">
-            <el-radio-group v-model="paymentMethod" size="large">
-              <div class="payment-row">
-                <el-radio label="cash" border>
-                  <i class="el-icon-money"></i>
-                  {{ $t("payment.cash") }}
-                </el-radio>
-                <el-radio label="wechat" border>
-                  <i class="el-icon-chat-dot-square"></i>
-                  {{ $t("payment.wechat") }}
-                </el-radio>
-                <el-radio label="alipay" border>
-                  <i class="el-icon-wallet"></i>
-                  {{ $t("payment.alipay") }}
-                </el-radio>
-              </div>
-            </el-radio-group>
-          </div>
-        </div>
-      </div>
-      <!-- 订单详情内容 -->
-      <div v-if="currentOrder" class="order-detail">
-        <!-- 订单头部 -->
-        <div class="order-header">
-          <div class="table-info">
-            <span class="label">{{ $t("table.number") }}:</span>
-            <span class="value">{{
-              $t("table.numberFormat", { number: selectedTable?.number })
-            }}</span>
-          </div>
-          <div class="order-status">
-            <el-tag :type="getOrderStatusType(currentOrder.status)">
-              {{ getOrderStatusText(currentOrder.status) }}
-            </el-tag>
-          </div>
-        </div>
-        <!-- 订单详情表格 -->
-        <el-table
-          :data="currentOrder.items"
-          style="width: 100%; margin-top: 20px"
-        >
-          <!-- 菜品名称 -->
-          <el-table-column
-            prop="name"
-            :label="$t('dishes.name')"
-          ></el-table-column>
-          <!-- 数量 -->
-          <el-table-column
-            prop="quantity"
-            :label="$t('order.quantity')"
-            width="100"
-          >
-            <template #default="{ row }">
-              <span class="quantity">x{{ row.quantity }}</span>
-            </template>
-          </el-table-column>
-          <!-- 金额 -->
-          <el-table-column :label="$t('order.amount')" width="120">
-            <template #default="{ row }">
-              <span class="amount">{{ row.price * row.quantity }} {{}}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <!-- 订单详情底部 -->
-        <div class="order-footer">
-          <div class="order-time">
-            <div>
-              {{ $t("order.orderTime") }}:
-              {{ formatTime(currentOrder.createdAt) }}
-            </div>
-            <div v-if="currentOrder.completedAt">
-              {{ $t("order.completedTime") }}:
-              {{ formatTime(currentOrder.completedAt) }}
-            </div>
-          </div>
-          <div class="order-total">
-            <span class="label">{{ $t("order.total") }}:</span>
-            <span class="total-amount">¥{{ currentOrder.totalAmount }}</span>
-          </div>
-        </div>
-      </div>
-      <!-- 结账底部 -->
-      <span slot="footer" class="dialog-footer">
-        <!-- 取消 -->
-        <el-button @click="checkoutVisible = false">{{
-          $t("common.cancel")
-        }}</el-button>
-        <!-- 确认结账 -->
-        <el-button
-          type="primary"
-          @click="handleCheckoutWithDialog"
-          :loading="checkoutLoading"
-        >
-          {{ $t("order.confirmCheckout") }}
-        </el-button>
-      </span>
-    </el-dialog>
+    <CheckoutDialog :visible.sync="checkoutVisible" :order="currentOrder" :paymentMethod.sync="paymentMethod"
+      :checkoutLoading="checkoutLoading" @checkout="handleCheckoutWithDialog" />
     <!-- 点餐二维码弹窗 -->
-    <el-dialog
-      :title="$t('table.qrCode')"
-      :visible.sync="qrCodeVisible"
-      width="300px"
-    >
+    <el-dialog :title="$t('table.qrCode')" :visible.sync="qrCodeVisible" width="300px">
       <div class="qr-code-content">
         <div v-if="selectedTable">
           <div class="qr-code-table">
             {{ $t("table.numberFormat", { number: selectedTable.number }) }}
           </div>
           <div class="qr-code-image">
-            <img
-              :src="getQRCodeUrl(selectedTable.id)"
-              :alt="$t('table.qrCode')"
-            />
+            <img :src="getQRCodeUrl(selectedTable.id)" :alt="$t('table.qrCode')" />
           </div>
           <div class="qr-code-tip">
             {{ $t("table.scanToOrder") }}
@@ -215,11 +86,7 @@
       </div>
     </el-dialog>
     <!-- 订单详情弹窗 -->
-    <el-dialog
-      :title="$t('order.details')"
-      :visible.sync="orderDetailVisible"
-      width="600px"
-    >
+    <el-dialog :title="$t('order.details')" :visible.sync="orderDetailVisible" width="600px">
       <div v-if="currentOrder" class="order-detail">
         <!-- 订单头部 -->
         <div class="order-header">
@@ -227,7 +94,7 @@
             <span class="label">{{ $t("table.number") }}:</span>
             <span class="value">{{
               $t("table.numberFormat", { number: selectedTable?.number })
-            }}</span>
+              }}</span>
           </div>
           <div class="order-status">
             <el-tag :type="getOrderStatusType(currentOrder.status)">
@@ -240,16 +107,9 @@
           <h3 class="section-title">{{ $t("order.originalItems") }}</h3>
           <el-table :data="originalItems" style="width: 100%">
             <!-- 菜品名称 -->
-            <el-table-column
-              prop="name"
-              :label="$t('dishes.name')"
-            ></el-table-column>
+            <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
             <!-- 数量 -->
-            <el-table-column
-              prop="quantity"
-              :label="$t('order.quantity')"
-              width="100"
-            >
+            <el-table-column prop="quantity" :label="$t('order.quantity')" width="100">
               <template #default="{ row }">
                 <span class="quantity">x{{ row.quantity }}</span>
               </template>
@@ -257,25 +117,14 @@
             <!-- 金额 -->
             <el-table-column :label="$t('order.amount')" width="120">
               <template #default="{ row }">
-                <span class="amount"
-                  >{{ row.price * row.quantity }}
-                  {{ formatPrice({ currency: row.currency }) }}</span
-                >
+                <span class="amount">{{ row.price * row.quantity }}
+                  {{ formatPrice({ currency: row.currency }) }}</span>
               </template>
             </el-table-column>
             <!-- 操作 -->
-            <el-table-column
-              :label="$t('common.action')"
-              width="80"
-              align="center"
-            >
+            <el-table-column :label="$t('common.action')" width="80" align="center">
               <template #default="{ row }">
-                <el-button
-                  type="danger"
-                  size="small"
-                  @click="removeItem(row)"
-                  >{{ $t("common.remove") }}</el-button
-                >
+                <el-button type="danger" size="small" @click="removeItem(row)">{{ $t("common.remove") }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -285,16 +134,9 @@
           <h3 class="section-title">{{ $t("order.appendedItems") }}</h3>
           <el-table :data="appendedItems" style="width: 100%">
             <!-- 菜品名称 -->
-            <el-table-column
-              prop="name"
-              :label="$t('dishes.name')"
-            ></el-table-column>
+            <el-table-column prop="name" :label="$t('dishes.name')"></el-table-column>
             <!-- 数量 -->
-            <el-table-column
-              prop="quantity"
-              :label="$t('order.quantity')"
-              width="100"
-            >
+            <el-table-column prop="quantity" :label="$t('order.quantity')" width="100">
               <template #default="{ row }">
                 <span class="quantity">x{{ row.quantity }}</span>
               </template>
@@ -302,25 +144,14 @@
             <!-- 金额 -->
             <el-table-column :label="$t('order.amount')" width="120">
               <template #default="{ row }">
-                <span class="amount"
-                  >{{ row.price * row.quantity }}
-                  {{ formatPrice({ currency: row.currency }) }}</span
-                >
+                <span class="amount">{{ row.price * row.quantity }}
+                  {{ formatPrice({ currency: row.currency }) }}</span>
               </template>
             </el-table-column>
             <!-- 操作 -->
-            <el-table-column
-              :label="$t('common.action')"
-              width="80"
-              align="center"
-            >
+            <el-table-column :label="$t('common.action')" width="80" align="center">
               <template #default="{ row }">
-                <el-button
-                  type="danger"
-                  size="small"
-                  @click="removeItem(row)"
-                  >{{ $t("common.remove") }}</el-button
-                >
+                <el-button type="danger" size="small" @click="removeItem(row)">{{ $t("common.remove") }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -339,14 +170,9 @@
           </div>
           <div class="order-total">
             <span class="label">{{ $t("order.total") }}:</span>
-            <span class="total-amount"
-              ><span
-                v-for="(amount, currency) in orderTotalsByCurrency"
-                :key="currency"
-              >
+            <span class="total-amount"><span v-for="(amount, currency) in orderTotalsByCurrency" :key="currency">
                 {{ amount }} {{ formatPrice({ currency: currency }) }}&nbsp;
-              </span></span
-            >
+              </span></span>
           </div>
         </div>
         <!-- 操作按钮 -->
@@ -357,11 +183,7 @@
               {{ $t("common.remove") }}
             </el-button>
             <!-- 完成订单 -->
-            <el-button
-              type="success"
-              :disabled="currentOrder.status === 'completed'"
-              @click="completeOrder"
-            >
+            <el-button type="success" :disabled="currentOrder.status === 'completed'" @click="completeOrder">
               {{ $t("order.complete") }}
             </el-button>
           </el-button-group>
@@ -373,37 +195,19 @@
       </div>
     </el-dialog>
     <!-- 添加桌台弹窗 -->
-    <el-dialog
-      :title="$t('table.addTable')"
-      :visible.sync="addTableVisible"
-      width="400px"
-    >
-      <el-form
-        :model="newTable"
-        ref="tableForm"
-        :rules="tableRules"
-        label-width="100px"
-      >
+    <el-dialog :title="$t('table.addTable')" :visible.sync="addTableVisible" width="400px">
+      <el-form :model="newTable" ref="tableForm" :rules="tableRules" label-width="100px">
         <el-form-item :label="$t('table.number')" prop="number">
-          <el-input-number
-            v-model="newTable.number"
-            :min="1"
-            controls-position="right"
-          ></el-input-number>
+          <el-input-number v-model="newTable.number" :min="1" controls-position="right"></el-input-number>
         </el-form-item>
         <el-form-item :label="$t('table.capacity')" prop="capacity">
-          <el-input-number
-            v-model="newTable.capacity"
-            :min="1"
-            :max="20"
-            controls-position="right"
-          ></el-input-number>
+          <el-input-number v-model="newTable.capacity" :min="1" :max="20" controls-position="right"></el-input-number>
         </el-form-item>
       </el-form>
       <span slot="footer">
         <el-button @click="addTableVisible = false">{{
           $t("common.cancel")
-        }}</el-button>
+          }}</el-button>
         <el-button type="primary" @click="addTable" :loading="addingTable">
           {{ $t("common.confirm") }}
         </el-button>
@@ -416,6 +220,7 @@
 import request from "@/utils/request";
 import { formatTime } from "@/utils/helpers/time";
 import { formatPrice } from "@/utils/helpers/Price";
+import CheckoutDialog from "@/views/components/business/admin/CheckoutDialog";
 
 export default {
   name: "TableManagement",
@@ -453,6 +258,9 @@ export default {
         ],
       },
     };
+  },
+  components: {
+    CheckoutDialog
   },
   created() {
     this.loadTables();
@@ -995,4 +803,4 @@ export default {
 .el-dialog {
   min-width: 500px;
 }
-</style>@/utils/helpers/Price@/utils/helpers/time
+</style>

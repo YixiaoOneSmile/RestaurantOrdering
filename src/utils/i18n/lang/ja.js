@@ -80,7 +80,9 @@ export default {
     deleteItem: '料理削除',
     deleteConfirm: 'この料理を削除してよろしいですか？',
     deleteSuccess: '削除成功',
-    deleteFailed: '削除失敗'
+    deleteFailed: '削除失敗',
+    unitPrice: '単価',
+    subtotal: '小計'
   },
   dishes: {
     add: '料理追加',

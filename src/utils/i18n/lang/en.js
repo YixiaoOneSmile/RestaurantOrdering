@@ -80,7 +80,9 @@ export default {
     deleteItem: 'Delete Dish',
     deleteConfirm: 'Are you sure you want to delete this dish?',
     deleteSuccess: 'Dish deleted successfully',
-    deleteFailed: 'Failed to delete dish'
+    deleteFailed: 'Failed to delete dish',
+    unitPrice: 'Unit Price',
+    subtotal: 'Subtotal'
   },
   dishes: {
     add: 'Add Dish',
