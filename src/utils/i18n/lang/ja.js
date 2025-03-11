@@ -82,7 +82,11 @@ export default {
     deleteSuccess: '削除成功',
     deleteFailed: '削除失敗',
     unitPrice: '単価',
-    subtotal: '小計'
+    subtotal: '小計',
+    pendingOrder: '未提出の注文',
+    submittedOrder: '提出済みの注文',
+    noPendingItems: '未提出の品はありません',
+    noSubmittedItems: '提出済みの品はありません'
   },
   dishes: {
     add: '料理追加',

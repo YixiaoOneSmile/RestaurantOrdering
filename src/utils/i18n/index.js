@@ -10,18 +10,18 @@ import elementJaLocale from 'element-ui/lib/locale/lang/ja'
 Vue.use(VueI18n)
 
 const messages = {
-  en: {
-    ...enLocale,
-    ...elementEnLocale
-  },
   zh: {
     ...zhLocale,
     ...elementZhLocale
   },
+  en: {
+    ...enLocale,
+    ...elementEnLocale
+  },
   ja: {
     ...jaLocale,
     ...elementJaLocale
-  }
+  },
 }
 
 // 获取浏览器语言设置

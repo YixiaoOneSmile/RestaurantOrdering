@@ -82,7 +82,11 @@ export default {
     deleteSuccess: 'Dish deleted successfully',
     deleteFailed: 'Failed to delete dish',
     unitPrice: 'Unit Price',
-    subtotal: 'Subtotal'
+    subtotal: 'Subtotal',
+    pendingOrder: 'Pending Order',
+    submittedOrder: 'Submitted Order',
+    noPendingItems: 'No pending items',
+    noSubmittedItems: 'No submitted items'
   },
   dishes: {
     add: 'Add Dish',

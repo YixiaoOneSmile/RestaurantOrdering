@@ -85,7 +85,11 @@ export default {
     deleteSuccess: '删除成功',
     deleteFailed: '删除失败',
     unitPrice: '单价',
-    subtotal: '小计'
+    subtotal: '小计',
+    pendingOrder: '待提交订单',
+    submittedOrder: '已提交订单',
+    noPendingItems: '暂无未提交的菜品',
+    noSubmittedItems: '暂无已提交的菜品'
   },
   dishes: {
     add: '添加菜品',
