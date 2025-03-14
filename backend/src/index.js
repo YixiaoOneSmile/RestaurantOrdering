@@ -18,9 +18,11 @@ app.use(bodyParser.json());
 // 路由
 app.use('/api/admin', adminRoutes);
 app.use('/api', orderRoutes);
+app.use('/qrcodes', express.static(path.join(__dirname, '../db/qrcodes')));
 
 async function startServer() {
   try {
+
     // 确保数据库目录存在
     const dbDir = path.join(__dirname, '../db');
     if (!fs.existsSync(dbDir)) {

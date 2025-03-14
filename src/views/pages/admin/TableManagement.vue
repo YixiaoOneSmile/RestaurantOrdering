@@ -14,10 +14,6 @@
           <el-button type="primary" size="small" @click="refreshTables" :loading="loading">
             {{ $t("common.refresh") }}
           </el-button>
-          <!-- 查看点餐码 -->
-          <el-button type="success" size="small" @click="showQRCode">
-            {{ $t("table.viewQRCode") }}
-          </el-button>
         </div>
       </div>
       <!-- 桌台列表 -->
@@ -195,24 +191,7 @@
       </div>
     </el-dialog>
     <!-- 添加桌台弹窗 -->
-    <el-dialog :title="$t('table.addTable')" :visible.sync="addTableVisible" width="400px">
-      <el-form :model="newTable" ref="tableForm" :rules="tableRules" label-width="100px">
-        <el-form-item :label="$t('table.number')" prop="number">
-          <el-input-number v-model="newTable.number" :min="1" controls-position="right"></el-input-number>
-        </el-form-item>
-        <el-form-item :label="$t('table.capacity')" prop="capacity">
-          <el-input-number v-model="newTable.capacity" :min="1" :max="20" controls-position="right"></el-input-number>
-        </el-form-item>
-      </el-form>
-      <span slot="footer">
-        <el-button @click="addTableVisible = false">{{
-          $t("common.cancel")
-          }}</el-button>
-        <el-button type="primary" @click="addTable" :loading="addingTable">
-          {{ $t("common.confirm") }}
-        </el-button>
-      </span>
-    </el-dialog>
+    <AddTableDialog :visible.sync="addTableVisible" :loading="addingTable" @confirm="addTable" />
   </div>
 </template>
 
@@ -221,6 +200,7 @@ import request from "@/utils/request";
 import { formatTime } from "@/utils/helpers/time";
 import { formatPrice } from "@/utils/helpers/Price";
 import CheckoutDialog from "@/views/components/business/admin/CheckoutDialog";
+import AddTableDialog from "@/views/components/business/admin/AddTableDialog";
 
 export default {
   name: "TableManagement",
@@ -260,7 +240,8 @@ export default {
     };
   },
   components: {
-    CheckoutDialog
+    CheckoutDialog,
+    AddTableDialog
   },
   created() {
     this.loadTables();
@@ -401,13 +382,20 @@ export default {
         this.checkoutLoading = false;
       }
     },
-    // 生成点餐二维码URL
-    showQRCode() {
-      if (!this.selectedTable) {
-        this.$message.warning("请先选择桌台");
-        return;
+    // 添加桌台
+    async addTable(tableData) {
+      this.addingTable = true
+      try {
+        await request.post('/api/admin/tables', tableData)
+        this.$message.success(this.$t('table.addSuccess'))
+        this.addTableVisible = false
+        this.refreshTables()
+      } catch (error) {
+        console.error('Add table error:', error)
+        this.$message.error(this.$t('table.addFailed'))
+      } finally {
+        this.addingTable = false
       }
-      this.qrCodeVisible = true;
     },
     getQRCodeUrl(tableId) {
       const baseUrl = process.env.VUE_APP_ORDER_URL || window.location.origin;
@@ -456,24 +444,6 @@ export default {
         number: Math.max(...this.tables.map((t) => t.number), 0) + 1,
         capacity: 4,
       };
-    },
-    // 添加桌台
-    async addTable() {
-      try {
-        await this.$refs.tableForm.validate();
-        this.addingTable = true;
-
-        await request.post("/api/admin/tables", this.newTable);
-
-        this.$message.success("添加桌台成功");
-        this.addTableVisible = false;
-        this.loadTables();
-      } catch (error) {
-        if (error === false) return; // 表单验证失败
-        this.$message.error(error.response?.data?.message || "添加桌台失败");
-      } finally {
-        this.addingTable = false;
-      }
     },
     // 删除菜单单项
     async removeItem(item) {

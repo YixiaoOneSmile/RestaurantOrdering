@@ -24,6 +24,10 @@ module.exports = (sequelize) => {
       validate: {
         isIn: [['empty', 'ordering', 'dining']]
       }
+    },
+    qrCodeUrl: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   });
 

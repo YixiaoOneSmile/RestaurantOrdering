@@ -7,7 +7,6 @@
         {{ $t('table.addTable') }}
       </el-button>
     </div>
-
     <!-- 桌台列表 -->
     <el-table :data="tables" v-loading="loading">
       <!-- 桌号 -->
@@ -34,33 +33,19 @@
       <el-table-column :label="$t('table.operations')" width="200">
         <template #default="{ row }">
           <!-- 编辑 -->
-          <el-button 
-            type="text" 
-            @click="editTable(row)"
-            :disabled="row.status !== 'empty'"
-          >{{ $t('common.edit') }}</el-button>
+          <el-button type="text" @click="editTable(row)" :disabled="row.status !== 'empty'">{{ $t('common.edit')
+            }}</el-button>
           <!-- 删除 -->
-          <el-button 
-            type="text" 
-            class="danger" 
-            @click="deleteTable(row)"
-            :disabled="row.status !== 'empty'"
-          >{{ $t('common.delete') }}</el-button>
+          <el-button type="text" class="danger" @click="deleteTable(row)" :disabled="row.status !== 'empty'">{{
+            $t('common.delete') }}</el-button>
           <!-- 查看点餐码 -->
-          <el-button 
-            type="text"
-            @click="showQRCode(row)"
-          >{{ $t('table.viewQRCode') }}</el-button>
+          <el-button type="text" @click="showQRCode(row)">{{ $t('table.viewQRCode') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <!-- 添加/编辑桌台弹窗 -->
-    <el-dialog
-      :title="editingTable ? $t('table.editTable') : $t('table.addTable')"
-      :visible.sync="dialogVisible"
-      width="400px"
-    >
+    <el-dialog :title="editingTable ? $t('table.editTable') : $t('table.addTable')" :visible.sync="dialogVisible"
+      width="400px">
       <el-form :model="tableForm" ref="tableForm" :rules="rules" label-width="80px">
         <el-form-item :label="$t('table.number')" prop="number">
           <el-input-number v-model="tableForm.number" :min="1"></el-input-number>
@@ -73,23 +58,6 @@
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="saveTable" :loading="saving">{{ $t('common.confirm') }}</el-button>
       </span>
-    </el-dialog>
-
-    <!-- 点餐码弹窗 -->
-    <el-dialog
-      title="点餐码"
-      :visible.sync="qrCodeVisible"
-      width="300px"
-    >
-      <div class="qr-code-content">
-        <div v-if="selectedTable">
-          <div class="qr-code-table">{{ selectedTable.number }}号桌</div>
-          <div class="qr-code-image">
-            <img :src="getQRCodeUrl(selectedTable.id)" alt="点餐码">
-          </div>
-          <div class="qr-code-tip">扫码点餐</div>
-        </div>
-      </div>
     </el-dialog>
   </div>
 </template>
@@ -208,9 +176,15 @@ export default {
         this.$message.error('删除失败')
       }
     },
+    // 显示二维码
     showQRCode(table) {
-      this.selectedTable = table
-      this.qrCodeVisible = true
+      this.selectedTable = table  // 将选中的桌台赋值给 selectedTable
+      // this.qrCodeVisible = true   // 将控制二维码弹窗显示的变量设置为 true，从而显示弹窗
+      
+      // 弹窗提示
+      window.alert("点餐码弹窗", table)
+      console.log("selectedTable:::::", this.selectedTable.id)
+      
     },
     getQRCodeUrl(tableId) {
       const baseUrl = process.env.VUE_APP_ORDER_URL || window.location.origin

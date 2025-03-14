@@ -11,12 +11,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "sqlite3": "^5.1.7",
+    "qrcode": "^1.5.4",
     "sequelize": "^6.37.1",
-    "body-parser": "^1.19.0"
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
