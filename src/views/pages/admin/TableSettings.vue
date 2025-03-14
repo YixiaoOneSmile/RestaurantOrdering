@@ -30,11 +30,11 @@
         </template>
       </el-table-column>
       <!-- 操作 -->
-      <el-table-column :label="$t('table.operations')" width="200">
+      <el-table-column :label="$t('table.operations')" width="350">
         <template #default="{ row }">
           <!-- 编辑 -->
           <el-button type="text" @click="editTable(row)" :disabled="row.status !== 'empty'">{{ $t('common.edit')
-            }}</el-button>
+          }}</el-button>
           <!-- 删除 -->
           <el-button type="text" class="danger" @click="deleteTable(row)" :disabled="row.status !== 'empty'">{{
             $t('common.delete') }}</el-button>
@@ -58,6 +58,19 @@
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="saveTable" :loading="saving">{{ $t('common.confirm') }}</el-button>
       </span>
+    </el-dialog>
+    <!-- 点餐码弹窗 -->
+    <el-dialog :title="$t('table.qrCode')" :visible.sync="qrCodeVisible" width="300px">
+      <div class="qr-code-content">
+        <div v-if="selectedTable">
+          <div class="qr-code-table">
+            {{ $t('table.numberFormat', { number: selectedTable.number }) }}
+          </div>
+          <div>
+            <img :src="`${baseUrl}${selectedTable.qrCodeUrl}`" :alt="$t('table.qrCode')" class="qr-code" />
+          </div>
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -83,7 +96,8 @@ export default {
       rules: {
         number: [{ required: true, message: '请输入桌号', trigger: 'blur' }],
         capacity: [{ required: true, message: '请输入容纳人数', trigger: 'blur' }]
-      }
+      },
+      baseUrl: process.env.VUE_APP_URL,
     }
   },
   created() {
@@ -135,7 +149,7 @@ export default {
     },
     async saveTable() {
       if (this.saving) return
-      
+
       try {
         await this.$refs.tableForm.validate()
       } catch (error) {
@@ -176,20 +190,12 @@ export default {
         this.$message.error('删除失败')
       }
     },
-    // 显示二维码
     showQRCode(table) {
-      this.selectedTable = table  // 将选中的桌台赋值给 selectedTable
-      // this.qrCodeVisible = true   // 将控制二维码弹窗显示的变量设置为 true，从而显示弹窗
-      
-      // 弹窗提示
-      window.alert("点餐码弹窗", table)
-      console.log("selectedTable:::::", this.selectedTable.id)
-      
+      console.log("测试::::", this.baseUrl);
+      this.selectedTable = table;
+      this.qrCodeVisible = true;
+      console.log("桌面测试::::", this.selectedTable);
     },
-    getQRCodeUrl(tableId) {
-      const baseUrl = process.env.VUE_APP_ORDER_URL || window.location.origin
-      return `${baseUrl}/table/${tableId}`
-    }
   }
 }
 </script>
@@ -211,24 +217,20 @@ export default {
 }
 
 .qr-code-content {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 280px;
 }
 
 .qr-code-table {
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 20px;
+  text-align: center;
+  color: #303133;
+  padding: 10px 0;
+  border-bottom: 1px solid #ebeef5;
+  flex: 0 0 auto;
 }
 
-.qr-code-image {
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
-  background: #f5f5f5;
-}
-
-.qr-code-tip {
-  margin-top: 20px;
-  color: #666;
-}
-</style> 
+</style>
