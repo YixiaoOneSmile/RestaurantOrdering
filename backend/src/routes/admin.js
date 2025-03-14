@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { Op } = require('sequelize');
 const { Order, Table, MenuItem } = require('../models/db/database');
+const { generateTableQRCode } = require('../utils/qrcode');  // 引入二维码生成函数
+
 
 // 获取所有桌台状态
 router.get('/tables', async (req, res) => {
@@ -265,6 +267,10 @@ router.post('/tables', async (req, res) => {
       capacity,
       status: 'empty'
     });
+    
+    // 生成二维码
+    const qrCodePath = await generateTableQRCode(table.id, table.number);
+    await table.update({ qrCodeUrl: qrCodePath });
 
     res.json({ 
       code: 0, 
