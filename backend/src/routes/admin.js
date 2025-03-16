@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { Op } = require('sequelize');
 const { Order, Table, MenuItem } = require('../models/db/database');
-const { generateTableQRCode } = require('../utils/qrcode');  // 引入二维码生成函数
+const { generateTableQRCode } = require('../utils/qrcode');
+const { validateDish } = require('../utils/validateDish');
+const { handleImageUpload } = require('../utils/fileUploadImg');
 
 
 // 获取所有桌台状态
@@ -170,10 +172,30 @@ router.get('/dishes', async (req, res) => {
 });
 
 // 添加菜品
-router.post('/dishes', async (req, res) => {
+router.post('/dishes', handleImageUpload, async (req, res) => {
   try {
-    const dish = await MenuItem.create(req.body);
-    res.json({ code: 0, data: dish, message: '添加成功' });
+    const validationError = validateDish(req.body);
+    if (validationError) {
+      return res.status(400).json(validationError);
+    }
+
+    const { name, nameCN, nameJP, price, currency, categoryId, image } = req.body;
+
+    const dish = await MenuItem.create({
+      name,      // 英文名
+      nameCN,    // 中文名
+      nameJP,    // 日文名
+      price: Number(price),
+      currency,
+      categoryId: Number(categoryId),
+      image
+    });
+
+    res.json({
+      code: 0,
+      data: dish,
+      message: '添加成功'
+    });
   } catch (error) {
     console.error('Create dish error:', error);
     res.status(500).json({ code: 1, message: '添加失败' });
@@ -181,14 +203,33 @@ router.post('/dishes', async (req, res) => {
 });
 
 // 修改菜品
-router.put('/dishes/:id', async (req, res) => {
+router.put('/dishes/:id', handleImageUpload, async (req, res) => {
   try {
     const { id } = req.params;
+
+    // 验证菜品数据
+    const validationError = validateDish(req.body);
+    if (validationError) {
+      return res.status(400).json(validationError);
+    }
+
     const dish = await MenuItem.findByPk(id);
     if (!dish) {
       return res.status(404).json({ code: 1, message: '菜品不存在' });
     }
-    await dish.update(req.body);
+
+    const { name, nameCN, nameJP, price, currency, categoryId, image } = req.body;
+
+    await dish.update({
+      name,
+      nameCN,
+      nameJP,
+      price: Number(price),
+      currency,
+      categoryId: Number(categoryId),
+      image
+    });
+
     res.json({ code: 0, message: '修改成功' });
   } catch (error) {
     console.error('Update dish error:', error);
@@ -384,6 +425,32 @@ router.delete('/orders/:orderId/delete-item', async (req, res) => {
   } catch (error) {
     console.error('Delete order item error:', error);
     res.status(500).json({ code: 1, message: '删除失败' });
+  }
+});
+
+// 图片上传接口
+router.post('/upload', handleImageUpload, (req, res) => {
+  try {
+    // req.body.image 是中间件处理后的图片路径
+    if (!req.body.image) {
+      return res.status(400).json({
+        code: 1,
+        message: '上传失败，未接收到文件'
+      });
+    }
+
+    // 返回图片路径
+    return res.json({
+      code: 0,
+      data: req.body.image,
+      message: '上传成功'
+    });
+  } catch (error) {
+    console.error('Image upload error:', error);
+    return res.status(500).json({
+      code: 1,
+      message: '服务器错误'
+    });
   }
 });
 

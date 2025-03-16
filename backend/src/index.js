@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 app.use('/api/admin', adminRoutes);
 app.use('/api', orderRoutes);
 app.use('/qrcodes', express.static(path.join(__dirname, '../db/qrcodes')));
+app.use('/img', express.static(path.join(__dirname, '../db/img')));
 
 async function startServer() {
   try {

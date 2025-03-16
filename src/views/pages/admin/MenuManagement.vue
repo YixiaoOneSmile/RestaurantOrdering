@@ -1,6 +1,6 @@
 <template>
   <div class="menu-management">
-    
+
     <div class="page-header">
       <h2>{{ $t("menu.dishes") }}</h2>
       <el-button type="primary" @click="showAddDialog">
@@ -8,82 +8,25 @@
       </el-button>
     </div>
 
-    <MenuList
-      :dishes="dishes"
-      :loading="loading"
-      :categories="categories"
-      @edit-dish="editDish"
-      @delete-dish="deleteDish"
-    />
+    <MenuList :dishes="dishes" :loading="loading" :categories="categories" @edit-dish="editDish"
+      @delete-dish="deleteDish" />
 
-    <!-- 添加/编辑菜品弹窗 -->
-    <el-dialog
-      :title="editingDish ? '编辑菜品' : '添加菜品'"
-      :visible.sync="dialogVisible"
-      width="500px"
-    >
-      <el-form
-        :model="dishForm"
-        ref="dishForm"
-        :rules="rules"
-        label-width="80px"
-      >
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="dishForm.name"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('dishes.price')" prop="price">
-          <div class="price-input">
-            <el-input-number
-              v-model="dishForm.price"
-              :precision="2"
-              :step="0.1"
-              style="width: 180px"
-            ></el-input-number>
-            <el-select
-              v-model="dishForm.currency"
-              style="width: 120px; margin-left: 10px"
-            >
-              <el-option
-                v-for="(label, value) in $t('dishes.currencies')"
-                :key="value"
-                :label="label"
-                :value="value"
-              ></el-option>
-            </el-select>
-          </div>
-        </el-form-item>
-        <el-form-item :label="$t('dishes.category')" prop="categoryId">
-          <el-select v-model="dishForm.categoryId">
-            <el-option
-              v-for="category in categories"
-              :key="category.id"
-              :label="category.name"
-              :value="category.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="图片" prop="image">
-          <el-input v-model="dishForm.image" placeholder="图片URL"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveDish" :loading="saving"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
+    <MenuDishDialog :visible.sync="dialogVisible" :dish="editingDish" :categories="categories" :loading="saving"
+      @save="saveDish" />
+
   </div>
 </template>
 
 <script>
 import request from "@/utils/request";
 import MenuList from "@/views/components/business/admin/MenuList.vue";
+import MenuDishDialog from "@/views/components/business/admin/MenuDishDialog.vue";
 
 export default {
   name: "MenuManagement",
   components: {
     MenuList,
+    MenuDishDialog
   },
   data() {
     return {
@@ -153,30 +96,26 @@ export default {
       };
       this.dialogVisible = true;
     },
-    async saveDish() {
-      this.$refs.dishForm.validate(async (valid) => {
-        if (!valid) return;
-
-        this.saving = true;
-        try {
-          if (this.editingDish) {
-            await request.put(
-              `/api/admin/dishes/${this.editingDish.id}`,
-              this.dishForm
-            );
-            this.$message.success("修改成功");
-          } else {
-            await request.post("/api/admin/dishes", this.dishForm);
-            this.$message.success("添加成功");
-          }
-          this.dialogVisible = false;
-          this.loadDishes();
-        } catch (error) {
-          this.$message.error(this.editingDish ? "修改失败" : "添加失败");
-        } finally {
-          this.saving = false;
+    async saveDish(formData) {
+      this.saving = true;
+      try {
+        if (this.editingDish) {
+          await request.put(`/api/admin/dishes/${this.editingDish.id}`, formData);
+          this.$message.success(this.$t('dishes.updateSuccess'));
+        } else {
+          await request.post('/api/admin/dishes', formData);
+          this.$message.success(this.$t('dishes.addSuccess'));
         }
-      });
+        this.dialogVisible = false;
+        this.loadDishes();
+      } catch (error) {
+        console.error('Save dish error:', error);
+        this.$message.error(this.editingDish
+          ? this.$t('dishes.updateFailed')
+          : this.$t('dishes.addFailed'));
+      } finally {
+        this.saving = false;
+      }
     },
     async deleteDish(dish) {
       try {
