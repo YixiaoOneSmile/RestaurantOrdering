@@ -169,4 +169,33 @@ router.post('/orders/:orderId/checkout', async (req, res) => {
   }
 });
 
+// 验证桌号是否有效
+router.get('/tables/:tableId/validate', async (req, res) => {
+  try {
+    const { tableId } = req.params;
+    // 检查桌号是否为数字
+    if (!/^\d+$/.test(tableId)) {
+      return res.json({ 
+        valid: false,
+        message: '无效的桌号格式' 
+      });
+    }
+    
+    // 从数据库查询桌台是否存在
+    const table = await Table.findByPk(tableId);
+    
+    // 返回验证结果
+    res.json({ 
+      valid: !!table, // 如果table存在则为true，否则为false
+      message: table ? '桌台存在' : '桌台不存在'
+    });
+  } catch (error) {
+    console.error('验证桌号失败:', error);
+    res.status(500).json({ 
+      valid: false,
+      message: '服务器错误' 
+    });
+  }
+});
+
 module.exports = router; 

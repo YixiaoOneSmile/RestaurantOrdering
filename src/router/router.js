@@ -7,6 +7,7 @@ import OrderHistory from "../views/pages/admin/OrderHistory.vue";
 import AdminLayout from "../views/layouts/AdminLayout.vue";
 import OrderLayout from "../views/layouts/OrderLayout.vue";
 import UserMenu from "../views/pages/user/UserMenu.vue";
+import validateTableId from "../utils/models/validateTableId";
 
 Vue.use(VueRouter);
 
@@ -25,7 +26,16 @@ const routes = [
   {
     path: "/table",
     component: OrderLayout,
-    children: [{ path: ":tableId", component: UserMenu, props: true }],
+    children: [
+      {
+        path: ":tableId",
+        component: UserMenu,
+        props: true,
+        beforeEnter: async (to, from, next) => {
+          await validateTableId(to.params.tableId, next);
+        },
+      },
+    ],
   },
   { path: "/", redirect: "/table/1" },
 ];
