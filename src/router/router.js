@@ -8,6 +8,7 @@ import AdminLayout from "../views/layouts/AdminLayout.vue";
 import OrderLayout from "../views/layouts/OrderLayout.vue";
 import UserMenu from "../views/pages/user/UserMenu.vue";
 import validateTableId from "../utils/models/validateTableId";
+import PrinterManagement from "../views/pages/admin/PrinterManagement.vue";
 
 Vue.use(VueRouter);
 
@@ -21,6 +22,7 @@ const routes = [
       { path: "table-settings", component: TableSettings },
       { path: "menu", component: MenuManagement },
       { path: "orders", component: OrderHistory },
+      { path: "printers", component: PrinterManagement },
     ],
   },
   {

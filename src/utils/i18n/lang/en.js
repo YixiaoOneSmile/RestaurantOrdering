@@ -14,14 +14,20 @@ export default {
     to: 'to',
     startDate: 'Start Date',
     endDate: 'End Date',
-    currency: '{amount} $'
+    currency: '{amount} $',
+    tip: 'Tip',
+    remove: 'Remove',
+    action: 'Action',
+    createTime: 'Create Time',
+    reset: 'Reset'
   },
   menu: {
-    title: 'Restaurant Management',
+    title: 'Restaurant',
     tables: 'Tables',
-    tableSettings: 'Table Settings',
-    dishes: 'Menu Management',
-    orders: 'Orders'
+    tableSettings: 'Table',
+    dishes: 'Menu ',
+    orders: 'Orders',
+    printers: 'Printer'
   },
   table: {
     number: 'Table No.',
@@ -144,5 +150,32 @@ export default {
   },
   restaurant: {
     name: 'Delicious Restaurant'
+  },
+  printer: {
+    name: 'Printer Name',
+    terminal: 'Terminal ID',
+    key: 'Terminal Key',
+    add: 'Add Printer',
+    edit: 'Edit Printer',
+    delete: 'Delete Printer',
+    config: 'Printer Configuration',
+    configPrinter: 'Configure Printer',
+    printOrder: 'Print Order',
+    printReceipt: 'Print Receipt',
+    defaultPrinter: 'Default Printer',
+    namePlaceholder: 'Please enter printer name',
+    nameRequired: 'Please enter printer name',
+    terminalRequired: 'Please enter terminal ID',
+    keyRequired: 'Please enter terminal key',
+    loadFailed: 'Failed to load printers',
+    addSuccess: 'Printer added successfully',
+    addFailed: 'Failed to add printer',
+    updateSuccess: 'Printer updated successfully',
+    updateFailed: 'Failed to update printer',
+    deleteSuccess: 'Printer deleted successfully',
+    deleteFailed: 'Failed to delete printer',
+    deleteConfirm: 'Are you sure you want to delete this printer?',
+    configSuccess: 'Configuration saved successfully',
+    configFailed: 'Failed to save configuration'
   }
 }

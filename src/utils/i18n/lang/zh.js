@@ -17,14 +17,17 @@ export default {
     currency: '{amount} C¥',
     tip: '提示',
     remove: '删除',
-    action: '操作'
+    action: '操作',
+    createTime: '创建时间',
+    reset: '重置'
   },
   menu: {
     title: '餐厅管理系统',
     tables: '桌台管理',
     tableSettings: '桌台设置',
     dishes: '菜品管理',
-    orders: '订单记录'
+    orders: '订单记录',
+    printers: '打印机管理'
   },
   table: {
     number: '桌号',
@@ -147,5 +150,32 @@ export default {
   },
   restaurant: {
     name: '美味餐厅'
+  },
+  printer: {
+    name: '打印机名称',
+    terminal: '终端号',
+    key: '终端密钥',
+    add: '添加打印机',
+    edit: '编辑打印机',
+    delete: '删除打印机',
+    config: '打印机配置',
+    configPrinter: '配置打印机',
+    printOrder: '打印订单',
+    printReceipt: '打印小票',
+    defaultPrinter: '默认打印机',
+    namePlaceholder: '请输入打印机名称',
+    nameRequired: '请输入打印机名称',
+    terminalRequired: '请输入终端号',
+    keyRequired: '请输入终端密钥',
+    loadFailed: '加载打印机失败',
+    addSuccess: '添加打印机成功',
+    addFailed: '添加打印机失败',
+    updateSuccess: '更新打印机成功',
+    updateFailed: '更新打印机失败',
+    deleteSuccess: '删除打印机成功',
+    deleteFailed: '删除打印机失败',
+    deleteConfirm: '确认删除该打印机吗？',
+    configSuccess: '保存配置成功',
+    configFailed: '保存配置失败'
   }
 }

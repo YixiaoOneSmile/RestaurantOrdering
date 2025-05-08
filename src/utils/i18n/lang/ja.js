@@ -14,14 +14,20 @@ export default {
     to: '〜',
     startDate: '開始日',
     endDate: '終了日',
-    currency: '{amount} J¥'
+    currency: '{amount} J¥',
+    tip: 'ヒント',
+    remove: '削除',
+    action: '操作',
+    createTime: '作成日時',
+    reset: 'リセット'
   },
   menu: {
     title: 'レストラン管理',
     tables: 'テーブル管理',
     tableSettings: 'テーブル設定',
     dishes: 'メニュー管理',
-    orders: '注文履歴'
+    orders: '注文履歴',
+    printers: 'プリンター管理'
   },
   table: {
     number: 'テーブル番号',
@@ -145,5 +151,32 @@ export default {
   },
   restaurant: {
     name: '美味しいレストラン'
+  },
+  printer: {
+    name: 'プリンター名',
+    terminal: '端末番号',
+    key: '端末キー',
+    add: 'プリンター追加',
+    edit: 'プリンター編集',
+    delete: 'プリンター削除',
+    config: 'プリンター設定',
+    configPrinter: 'プリンターを設定',
+    printOrder: '注文印刷',
+    printReceipt: 'レシート印刷',
+    defaultPrinter: 'デフォルトプリンター',
+    namePlaceholder: 'プリンター名を入力してください',
+    nameRequired: 'プリンター名を入力してください',
+    terminalRequired: '端末番号を入力してください',
+    keyRequired: '端末キーを入力してください',
+    loadFailed: 'プリンターの読み込みに失敗しました',
+    addSuccess: 'プリンター追加成功',
+    addFailed: 'プリンター追加失敗',
+    updateSuccess: 'プリンター更新成功',
+    updateFailed: 'プリンター更新失敗',
+    deleteSuccess: 'プリンター削除成功',
+    deleteFailed: 'プリンター削除失敗',
+    deleteConfirm: 'このプリンターを削除してもよろしいですか？',
+    configSuccess: '設定保存成功',
+    configFailed: '設定保存失敗'
   }
 }
