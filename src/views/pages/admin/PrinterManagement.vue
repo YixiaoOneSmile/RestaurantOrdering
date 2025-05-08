@@ -2,11 +2,6 @@
   <div class="printer-management">
     <div class="page-header">
       <h2>{{ $t('menu.printers') }}</h2>
-      <div>
-        <el-button type="primary" @click="configPrinter">
-          {{ $t('printer.configPrinter') }}
-        </el-button>
-      </div>
     </div>
 
     <div class="search-container">
@@ -18,6 +13,7 @@
           <el-button type="primary" @click="search">{{ $t('common.search') }}</el-button>
           <el-button @click="reset">{{ $t('common.reset') }}</el-button>
           <el-button type="primary" @click="showAddDialog">{{ $t('printer.add') }}</el-button>
+          <el-button type="success" @click="configPrinter">{{ $t('printer.configPrinter') }}</el-button>
         </el-form-item>
       </el-form>
     </div>
