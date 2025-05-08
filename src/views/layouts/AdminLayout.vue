@@ -2,13 +2,8 @@
   <el-container class="admin-layout">
     <el-aside width="200px">
       <div class="logo">{{ $t('menu.title') }}</div>
-      <el-menu
-        :router="true"
-        :default-active="$route.path"
-        background-color="#304156"
-        text-color="#fff"
-        active-text-color="#409EFF"
-      >
+      <el-menu :router="true" :default-active="$route.path" background-color="#304156" text-color="#fff"
+        active-text-color="#409EFF">
         <el-menu-item index="/admin/tables">
           <i class="el-icon-s-grid"></i>
           <span>{{ $t('menu.tables') }}</span>
@@ -24,6 +19,10 @@
         <el-menu-item index="/admin/orders">
           <i class="el-icon-s-order"></i>
           <span>{{ $t('menu.orders') }}</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/printers">
+          <i class="el-icon-printer"></i>
+          <span>{{ $t('menu.printers') }}</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
