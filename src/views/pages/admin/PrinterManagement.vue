@@ -14,6 +14,9 @@
           <el-button @click="reset">{{ $t('common.reset') }}</el-button>
           <el-button type="primary" @click="showAddDialog">{{ $t('printer.add') }}</el-button>
           <el-button type="success" @click="configPrinter">{{ $t('printer.configPrinter') }}</el-button>
+          <el-button type="warning" @click="connectPrinters" :loading="connecting">
+            {{ $t('printer.connect') }}
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -35,21 +38,14 @@
         </template>
       </el-table-column>
     </el-table>
-    
-    <el-pagination
-      class="pagination"
-      background
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-      :page-size="pageSize"
-      :current-page="currentPage"
-      :page-sizes="[10, 20, 50]"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    ></el-pagination>
+
+    <el-pagination class="pagination" background layout="total, sizes, prev, pager, next, jumper" :total="total"
+      :page-size="pageSize" :current-page="currentPage" :page-sizes="[10, 20, 50]" @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"></el-pagination>
 
     <!-- 添加/编辑打印机弹窗 -->
-    <el-dialog :title="editingPrinter ? $t('printer.edit') : $t('printer.add')" :visible.sync="dialogVisible" width="500px">
+    <el-dialog :title="editingPrinter ? $t('printer.edit') : $t('printer.add')" :visible.sync="dialogVisible"
+      width="500px">
       <el-form :model="printerForm" ref="printerForm" :rules="rules" label-width="120px">
         <el-form-item :label="$t('printer.name')" prop="name">
           <el-input v-model="printerForm.name"></el-input>
@@ -79,11 +75,7 @@
           </el-form-item>
           <el-form-item :label="$t('printer.defaultPrinter')" prop="defaultPrinter">
             <el-select v-model="configForm.defaultPrinter">
-              <el-option 
-                v-for="printer in printers" 
-                :key="printer.id" 
-                :label="printer.name" 
-                :value="printer.id">
+              <el-option v-for="printer in printers" :key="printer.id" :label="printer.name" :value="printer.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -107,6 +99,7 @@ export default {
     return {
       printers: [],
       loading: false,
+      connecting: false,
       saving: false,
       configSaving: false,
       dialogVisible: false,
@@ -166,6 +159,22 @@ export default {
         }
       } catch (error) {
         console.error('Failed to load printer config:', error);
+      }
+    },
+    
+    // 添加连接打印机方法
+    async connectPrinters() {
+      this.connecting = true;
+      try {
+        await request.post('/api/admin/printers/initialize');
+        this.$message.success(this.$t('printer.connectSuccess'));
+        // 重新加载打印机列表
+        this.loadPrinters();
+      } catch (error) {
+        console.error('Failed to connect printers:', error);
+        this.$message.error(this.$t('printer.connectFailed'));
+      } finally {
+        this.connecting = false;
       }
     },
     

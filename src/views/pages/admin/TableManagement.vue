@@ -43,8 +43,8 @@
                 {{ $t("order.amount") }}:
                 <span v-if="table.currentOrder && table.currentOrder.items">
                   <span v-for="(amount, currency) in getOrderTotalsByCurrency(
-                      table.currentOrder.items
-                    )" :key="currency">
+                    table.currentOrder.items
+                  )" :key="currency">
                     {{ amount }} {{ formatPrice({ currency: currency }) }}&nbsp;
                   </span>
                 </span>
@@ -90,7 +90,7 @@
             <span class="label">{{ $t("table.number") }}:</span>
             <span class="value">{{
               $t("table.numberFormat", { number: selectedTable?.number })
-              }}</span>
+            }}</span>
           </div>
           <div class="order-status">
             <el-tag :type="getOrderStatusType(currentOrder.status)">
@@ -181,6 +181,10 @@
             <!-- 完成订单 -->
             <el-button type="success" :disabled="currentOrder.status === 'completed'" @click="completeOrder">
               {{ $t("order.complete") }}
+            </el-button>
+            <!-- 添加打印按钮 -->
+            <el-button type="warning" @click="printOrder" :loading="printing">
+              {{ $t("printer.print") }}
             </el-button>
           </el-button-group>
         </div>
@@ -499,6 +503,28 @@ export default {
         return acc;
       }, {});
     },
+    // 优化打印订单方法
+    async printOrder() {
+      if (!this.selectedTable) return;
+
+      this.printing = true;
+      try {
+        // 只使用桌台ID，不传递订单ID
+        const tableId = this.selectedTable.id;
+        const endpoint = `/api/admin/tables/${tableId}/print`;
+
+        await request.post(endpoint, {
+          tableId: this.selectedTable.id
+        });
+
+        this.$message.success(this.$t('printer.printSuccess'));
+      } catch (error) {
+        console.error('Print order error:', error);
+        this.$message.error(this.$t('printer.printFailed'));
+      } finally {
+        this.printing = false;
+      }
+    }
   },
   computed: {
     // 原始菜品
@@ -537,94 +563,116 @@ export default {
 .table-management {
   padding: 20px;
 }
+
 .header-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .table-card {
   margin-bottom: 20px;
   padding: 20px;
   transition: all 0.3s;
 }
+
 .table-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
+
 .table-card.empty {
   background-color: #f0f9eb;
 }
+
 .table-card.ordering {
   background-color: #f4f4f5;
 }
+
 .table-card.dining {
   background-color: #fef0f0;
 }
+
 .table-number {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
 }
+
 .table-info {
   margin-top: 10px;
   font-size: 14px;
   color: #666;
 }
+
 .order-details {
   margin-top: 20px;
 }
+
 .order-summary {
   margin-top: 20px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
 }
+
 .time-info {
   color: #666;
   font-size: 14px;
 }
+
 .total-amount {
   font-size: 18px;
   font-weight: bold;
   color: #f56c6c;
 }
+
 .empty-tip {
   text-align: center;
   color: #999;
   padding: 30px 0;
 }
+
 .checkout-content {
   padding: 20px 0;
 }
+
 .checkout-item {
   margin-bottom: 20px;
 }
+
 .checkout-item .amount {
   font-size: 24px;
   color: #f56c6c;
   font-weight: bold;
 }
+
 .qr-code-content {
   text-align: center;
 }
+
 .qr-code-table {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 20px;
 }
+
 .qr-code-image {
   width: 200px;
   height: 200px;
   margin: 0 auto;
   background: #f5f5f5;
 }
+
 .qr-code-tip {
   margin-top: 20px;
   color: #666;
 }
+
 .order-detail {
   padding: 20px;
 }
+
 .order-header {
   display: flex;
   justify-content: space-between;
@@ -632,16 +680,20 @@ export default {
   padding-bottom: 20px;
   border-bottom: 1px solid #eee;
 }
+
 .table-info {
   font-size: 18px;
 }
+
 .table-info .label {
   color: #666;
 }
+
 .table-info .value {
   font-weight: bold;
   margin-left: 5px;
 }
+
 .order-footer {
   margin-top: 20px;
   padding-top: 20px;
@@ -650,43 +702,53 @@ export default {
   justify-content: space-between;
   align-items: flex-end;
 }
+
 .order-time {
   color: #666;
   font-size: 14px;
 }
+
 .order-total {
   text-align: right;
 }
+
 .order-total .label {
   font-size: 16px;
 }
+
 .total-amount {
   font-size: 24px;
   color: #f56c6c;
   font-weight: bold;
   margin-left: 10px;
 }
+
 .order-actions {
   margin-top: 20px;
   text-align: right;
 }
+
 .quantity {
   color: #666;
 }
+
 .amount {
   color: #f56c6c;
 }
+
 .empty-order {
   text-align: center;
   padding: 40px;
   color: #999;
 }
+
 .tables-container {
   padding: 20px;
   background: #fff;
   border-radius: 4px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
+
 .tables-header {
   display: flex;
   justify-content: space-between;
@@ -695,12 +757,14 @@ export default {
   border-bottom: 1px solid #eee;
   margin-bottom: 20px;
 }
+
 .tables-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
   padding: 10px;
 }
+
 .table-item {
   background: #fff;
   border-radius: 4px;
@@ -709,22 +773,28 @@ export default {
   transition: all 0.3s;
   border: 1px solid #eee;
 }
+
 .table-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
+
 .table-content {
   height: 100%;
 }
+
 .table-item.empty {
   background-color: #f0f9eb;
 }
+
 .table-item.ordering {
   background-color: #f4f4f5;
 }
+
 .table-item.dining {
   background-color: #fef0f0;
 }
+
 .section-title {
   font-size: 16px;
   font-weight: bold;
@@ -733,22 +803,27 @@ export default {
   padding-left: 10px;
   border-left: 3px solid #409eff;
 }
+
 .appended-section {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px dashed #eee;
 }
+
 .order-section {
   margin-bottom: 20px;
 }
+
 .payment-methods {
   margin-top: 15px;
 }
+
 .payment-row {
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
+
 .payment-row .el-radio {
   flex: 1;
   margin-right: 0;
@@ -759,17 +834,21 @@ export default {
   border-width: 2px;
   font-size: 16px;
 }
+
 .payment-row .el-radio.is-bordered {
   padding: 0 15px;
 }
+
 .payment-row .el-radio i {
   margin-right: 5px;
   font-size: 18px;
 }
+
 .payment-row .el-radio.is-checked {
   border-color: #409eff;
   background-color: #ecf5ff;
 }
+
 .el-dialog {
   min-width: 500px;
 }

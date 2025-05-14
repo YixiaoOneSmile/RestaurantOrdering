@@ -176,6 +176,12 @@ export default {
     deleteFailed: '删除打印机失败',
     deleteConfirm: '确认删除该打印机吗？',
     configSuccess: '保存配置成功',
-    configFailed: '保存配置失败'
+    configFailed: '保存配置失败',
+    connect: '连接打印机',
+    connectSuccess: '打印机连接成功',
+    connectFailed: '打印机连接失败',
+    printSuccess: '订单打印成功',
+    printFailed: '订单打印失败',
+    print: '打印订单'
   }
 }

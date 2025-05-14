@@ -10,14 +10,18 @@ const sequelize = new Sequelize({
 const MenuItem = require('./MenuItem')(sequelize);
 const Order = require('./Order')(sequelize);
 const Table = require('./Table')(sequelize);
+const User = require("./User")(sequelize);
 
 // 定义关联关系
 Order.belongsTo(Table, { foreignKey: 'tableId', as: 'table' });
 Table.hasMany(Order, { foreignKey: 'tableId', as: 'orders' });
+// Order.belongsTo(User, { foreignKey: "userId", as: "user" });
+// User.hasMany(Order, { foreignKey: "userId", as: "orders" });
 
 module.exports = {
   sequelize,
   MenuItem,
   Order,
-  Table
+  Table,
+  User,
 }; 
